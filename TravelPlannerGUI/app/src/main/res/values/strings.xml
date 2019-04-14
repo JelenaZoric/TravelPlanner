@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">maps.google.tryout</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_routes">RoutesActivity</string>
+    <string name="title_activity_new_route">NewRouteActivity</string>
+
+    <string name="new_route_form_instructions">Create route for a day in SOMEWHERE</string>
+    <string name="route_title">Route title</string>
+
+    <string name="button_confirm">OK</string>
+</resources>
