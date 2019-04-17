@@ -1,8 +1,10 @@
 package com.example.travelplanner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -47,5 +49,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 toast.show();
             }
         });
+    }
+
+    public void startSettings(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }

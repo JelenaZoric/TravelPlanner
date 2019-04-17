@@ -16,11 +16,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".NewRouteActivity"
             android:label="@string/title_activity_new_route"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.EDIT"/>
+                <action android:name="android.intent.action.EDIT" />
             </intent-filter>
         </activity>
         <activity

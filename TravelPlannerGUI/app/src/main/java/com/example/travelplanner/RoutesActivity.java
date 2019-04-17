@@ -52,4 +52,9 @@ public class RoutesActivity extends AppCompatActivity {
     public static void addRoute(Route route){
         routes.add(route);
     }
+
+    public void startSettings(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
 }

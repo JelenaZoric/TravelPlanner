@@ -8,4 +8,5 @@
     <string name="route_title">Route title</string>
 
     <string name="button_confirm">OK</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>
