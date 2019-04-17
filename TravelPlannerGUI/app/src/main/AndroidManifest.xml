@@ -15,12 +15,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ActivitiesActivity" />
+        <activity android:name=".NewActivityActivity" />
+        <activity android:name=".ActivityActivity" />
         <activity
             android:name=".NewRouteActivity"
             android:label="@string/title_activity_new_route"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.EDIT"/>
+                <action android:name="android.intent.action.EDIT" />
             </intent-filter>
         </activity>
         <activity

@@ -20,7 +20,7 @@ public class RoutesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routes);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.activities_toolbar);
         setSupportActionBar(toolbar);
     }
 
@@ -35,7 +35,7 @@ public class RoutesActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Intent intent = new Intent(RoutesActivity.this, MapsActivity.class);
+                Intent intent = new Intent(RoutesActivity.this, ActivitiesActivity.class);
                 Route route = routes.get((int)id);
                 intent.putExtra("route", route);
 

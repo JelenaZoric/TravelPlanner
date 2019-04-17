@@ -27,17 +27,18 @@
         android:layout_marginTop="10dp"/>
 
     <DatePicker
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/route_date"
-        android:layout_margin="10dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="392dp"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="0dp" />
 
     <Button
+        android:id="@+id/route_create"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_confirm"
-        android:layout_margin="10dp"
-        android:id="@+id/route_create"
-        android:onClick="createRoute"/>
+        android:layout_margin="0dp"
+        android:onClick="createRoute"
+        android:text="@string/button_confirm" />
 
 </LinearLayout>
