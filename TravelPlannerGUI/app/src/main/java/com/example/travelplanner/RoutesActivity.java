@@ -57,4 +57,9 @@ public class RoutesActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
+
+    public void openObject(View view) {
+        Intent intent = new Intent(this, ObjectActivity.class);
+        startActivity(intent);
+    }
 }

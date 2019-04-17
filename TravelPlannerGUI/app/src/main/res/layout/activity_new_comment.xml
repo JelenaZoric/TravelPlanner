@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RoutesActivity">
+    tools:context=".NewCommentActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -24,50 +24,78 @@
                 android:orientation="horizontal">
 
                 <android.support.design.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"
+                    android:onClick="goBack"
                     android:backgroundTint="@color/colorPrimary"
-                    style="@style/Widget.MaterialComponents.Button.Icon"
                     app:cornerRadius="20dp"
-                    app:icon="@drawable/baseline_keyboard_backspace_black_18dp"
-                    android:onClick="openObject"/>
+                    app:icon="@drawable/baseline_keyboard_backspace_black_18dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="Routes"
+                    android:text="Add comment"
                     android:textColor="@color/common_google_signin_btn_text_dark_pressed"
                     android:textSize="24dp" />
 
                 <android.support.design.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="startSettings"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:backgroundTint="@color/colorPrimary"
-                    style="@style/Widget.MaterialComponents.Button.Icon"
+                    android:onClick="startSettings"
                     app:cornerRadius="20dp"
-                    app:icon="@drawable/baseline_settings_black_18dp"/>
+                    app:icon="@drawable/baseline_settings_black_18dp" />
 
             </RelativeLayout>
-
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_routes" />
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_input_add"
-        android:onClick="openNewRouteForm"/>
+        <LinearLayout
+            android:id="@+id/comments_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Rating (0-5)*"
+                android:textSize="20sp"
+                android:inputType="text"
+                android:layout_marginTop="10dp"
+                android:id="@+id/new_comment_grade"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Comment"
+                android:textSize="20sp"
+                android:inputType="text"
+                android:layout_marginTop="10dp"
+                android:id="@+id/new_comment_comment"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_confirm"
+                android:layout_margin="10dp"
+                android:id="@+id/route_create"
+                android:onClick="createComment"/>
+        </LinearLayout>
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

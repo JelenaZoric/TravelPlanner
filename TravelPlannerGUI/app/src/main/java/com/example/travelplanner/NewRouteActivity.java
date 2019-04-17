@@ -32,7 +32,7 @@ public class NewRouteActivity extends AppCompatActivity {
         DatePicker dateView = findViewById(R.id.route_date);
         int day = dateView.getDayOfMonth();
         int month = dateView.getMonth();
-        int year =  dateView.getYear();
+        int year = dateView.getYear();
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
@@ -49,6 +49,11 @@ public class NewRouteActivity extends AppCompatActivity {
 
     public void startSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    public void goBack(View view) {
+        Intent intent = new Intent(this, RoutesActivity.class);
         startActivity(intent);
     }
 
