@@ -50,4 +50,9 @@ public class ActivitiesActivity extends AppCompatActivity {
     }
 
     public static void addActivity(Activity activity) { activities.add(activity); }
+
+    public void startSettings(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
 }
