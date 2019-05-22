@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group>
+        <item
+            android:id="@+id/nav_travels"
+            android:title="Travels" />
+        <item
+            android:id="@+id/nav_travel"
+            android:title="Travel destination here">
+            <menu>
+                <item
+                    android:id="@+id/nav_travel_info"
+                    android:title="Basic info" />
+                <item
+                    android:id="@+id/nav_travel_items"
+                    android:title="Items" />
+                <item
+                    android:id="@+id/nav_routes"
+                    android:title="Routes" />
+            </menu>
+        </item>
+        <item
+            android:id="@+id/nav_route"
+            android:title="Route title here">
+            <menu>
+                <item
+                    android:id="@+id/nav_route_list"
+                    android:title="List" />
+                <item
+                    android:id="@+id/nav_route_map"
+                    android:title="Map" />
+            </menu>
+        </item>
+    </group>
+
+    <item android:title="Profile">
+        <menu>
+            <item
+                android:id="@+id/nav_profile"
+                android:icon="@drawable/ic_menu_gallery"
+                android:title="Profile" />
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_menu_gallery"
+                android:title="Logout" />
+        </menu>
+    </item>
+</menu>
