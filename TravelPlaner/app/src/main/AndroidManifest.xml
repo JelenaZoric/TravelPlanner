@@ -9,8 +9,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".RegisterActivity"
+            android:label="@string/title_activity_register"/>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".NewCommentActivity"
+            android:label="@string/title_activity_new_comment"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -18,6 +29,7 @@
         </activity>
         <activity
             android:name=".ObjectActivity"
+            android:label="@string/title_activity_object"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -25,6 +37,7 @@
         </activity>
         <activity
             android:name=".NewActivityActivity"
+            android:label="@string/title_activity_new_activity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -32,6 +45,7 @@
         </activity>
         <activity
             android:name=".NewRouteActivity"
+            android:label="@string/title_activity_new_route"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -39,6 +53,7 @@
         </activity>
         <activity
             android:name=".NewTravelActivity"
+            android:label="@string/title_activity_new_travel"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -46,32 +61,32 @@
         </activity>
         <activity
             android:name=".ProfileActivity"
+            android:label="@string/title_activity_profile"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RouteMapActivity"
+            android:label="@string/title_activity_route_map"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RouteListActivity"
+            android:label="@string/title_activity_route_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RoutesActivity"
+            android:label="@string/title_activity_routes"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".TravelItemsActivity"
+            android:label="@string/title_activity_travel_items"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".TravelInfoActivity"
+            android:label="@string/title_activity_travel_info"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".TravelsActivity"
             android:label="@string/title_activity_travels"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

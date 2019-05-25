@@ -16,6 +16,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.ftn.uns.travelplaner.adapters.TravelsAdapter;
+import com.ftn.uns.travelplaner.mock.Mocker;
+
+import java.util.Random;
+
 public class TravelsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -23,10 +28,10 @@ public class TravelsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travels);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.new_travel);
+        FloatingActionButton fab = findViewById(R.id.new_travel);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -35,20 +40,18 @@ public class TravelsActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        String[] travels = {"Moscow", "Belgrade", "Rems"};
         ListView travelsView = findViewById(R.id.travels_list);
-        /*simple_list_item_1 will be changed to new layout!*/
-        travelsView.setAdapter(new ArrayAdapter<>(
-                TravelsActivity.this, android.R.layout.simple_list_item_1, travels));
+        Random random = new Random();
+        travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, Mocker.mockTravels(random.nextInt(10) + 1)));
 
         setOnClickListener(travelsView);
     }
@@ -59,8 +62,6 @@ public class TravelsActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
                 Intent intent = new Intent(TravelsActivity.this, TravelInfoActivity.class);
-                /*Route route = routes.get((int)id);
-                intent.putExtra("route", route);*/
                 startActivity(intent);
             }
         });
@@ -68,7 +69,7 @@ public class TravelsActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -78,19 +79,14 @@ public class TravelsActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.settings_bar, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -98,10 +94,8 @@ public class TravelsActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
@@ -109,12 +103,11 @@ public class TravelsActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             //do logout
-        } else if (id == R.id.nav_travels) {
-            //do nothing
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 }

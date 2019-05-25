@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/travel_listitem_destination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Moscow, Russia"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textSize="26sp" />
+
+    <TextView
+        android:id="@+id/travel_listitem_duration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="21 NOVEMBER 2017 -> 19 DECEMBER 2017"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+</LinearLayout>

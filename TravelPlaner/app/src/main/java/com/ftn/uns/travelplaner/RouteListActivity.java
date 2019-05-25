@@ -23,10 +23,10 @@ public class RouteListActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.new_activity);
+        FloatingActionButton fab = findViewById(R.id.new_activity);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -35,18 +35,17 @@ public class RouteListActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         String[] travels = {"Route1", "Route2", "Route3"};
         ListView travelsView = findViewById(R.id.routes_list_list);
-        /*simple_list_item_1 will be changed to new layout!*/
         travelsView.setAdapter(new ArrayAdapter<>(
                 RouteListActivity.this, android.R.layout.simple_list_item_1, travels));
 
@@ -59,8 +58,6 @@ public class RouteListActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
                 Intent intent = new Intent(RouteListActivity.this, ObjectActivity.class);
-                /*Route route = routes.get((int)id);
-                intent.putExtra("route", route);*/
                 startActivity(intent);
             }
         });
@@ -68,7 +65,7 @@ public class RouteListActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -84,12 +81,8 @@ public class RouteListActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -99,7 +92,6 @@ public class RouteListActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
@@ -119,15 +111,14 @@ public class RouteListActivity extends AppCompatActivity
         } else if (id == R.id.nav_routes) {
             Intent intent = new Intent(RouteListActivity.this, RoutesActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_route_list) {
-            //open route list activity
         } else if (id == R.id.nav_route_map) {
             Intent intent = new Intent(RouteListActivity.this, RouteMapActivity.class);
             startActivity(intent);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 }
