@@ -1,23 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".RouteMapActivity"
-    tools:showIn="@layout/app_bar_route_map">
+    tools:showIn="@layout/app_bar_route_map"
+    android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin">
+        <TextView
+            android:layout_weight="6"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/route_name"
+            android:text="Route 123"/>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="DO something about wohoo"/>
-    </FrameLayout>
+            android:layout_weight="2"
+            android:text="12/4/2130"
+            android:textDirection="rtl" />
+    </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <com.google.android.gms.maps.MapView
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent" />
+
+</LinearLayout>

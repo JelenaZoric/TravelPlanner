@@ -7,21 +7,41 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/object_title"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="7"
-        android:text="Fish and Zelenish"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:textSize="26sp" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/object_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fish and Zelenish"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="26sp" />
+
+        <TextView
+            android:id="@+id/object_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bulevar Oslobodjenja 26, Novi Sad"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="14sp" />
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/object_rating"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="1"
+        android:autoSizeTextType="uniform"
+        android:fadingEdge="horizontal|vertical"
         android:text="5 / 5"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold" />
 
 </LinearLayout>

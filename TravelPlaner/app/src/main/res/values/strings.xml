@@ -45,4 +45,11 @@
     <string name="prompt_new_comment">Say what you think about this object</string>
     <string name="prompt_rating">Rate this object</string>
     <string name="prompt_activity_type">What do you want to do</string>
+    <string name="prompt_activity_time">What time do you want to do it</string>
+    <string name="prompt_new_item">New item</string>
+
+    <string name="dummy_obj_description">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec varius tortor non faucibus malesuada. Quisque porta neque eget nisl iaculis, a dapibus orci faucibus. Nulla id ligula at felis sagittis rhoncus. Aenean auctor at erat vitae suscipit. Phasellus pulvinar lacus sit amet venenatis mollis. Donec suscipit arcu sit amet urna eleifend malesuada non ut sem. Phasellus et ante eget magna pellentesque venenatis.
+        Vivamus interdum ante id lectus ultricies feugiat. Mauris in cursus metus, vel mattis quam. Nulla facilisi. Aliquam vestibulum ligula mattis magna hendrerit lobortis. Suspendisse non iaculis metus. Nulla tincidunt et augue et hendrerit. Mauris sed felis in dui commodo tristique et ut magna.
+    </string>
 </resources>

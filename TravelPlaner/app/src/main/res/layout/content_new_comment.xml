@@ -48,10 +48,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/prompt_rating"/>
 
-            <Spinner
+            <SeekBar
                 android:id="@+id/rating"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:dropDownWidth="match_parent"
                 android:pointerIcon="top_right_diagonal_double_arrow"
                 android:spinnerMode="dropdown" />

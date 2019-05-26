@@ -1,23 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ObjectActivity"
-    tools:showIn="@layout/app_bar_object">
+    tools:showIn="@layout/app_bar_object"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <ImageView
+        android:id="@+id/object_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="wrap_content"
+        android:contentDescription="object image"
+        android:src="@mipmap/ic_launcher"
+        android:paddingBottom="@dimen/activity_vertical_margin"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="DO something about wohoo"/>
-    </FrameLayout>
+            android:id="@+id/object_address"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:text="Bulevar Oslobodjenja 26, Novi Sad"/>
+        <TextView
+            android:id="@+id/object_rating"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="5/5"
+            android:autoSizeTextType="uniform"
+            android:fadingEdge="horizontal|vertical"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/colorPrimaryDark"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/object_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:justificationMode="inter_word"
+        android:text="@string/dummy_obj_description"
+        android:textAlignment="viewStart" />
+
+    <ListView
+        android:id="@+id/comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
