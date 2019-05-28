@@ -1,23 +1,26 @@
-<LinearLayout android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
 
     <TextView
-        android:layout_weight="6"
+        android:layout_weight="5"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/route_name"
-        android:text="Route 123"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textSize="26sp" />
 
     <TextView
         android:id="@+id/route_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:text="12/4/2130"
-        android:textDirection="rtl" />
+        android:textDirection="rtl"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
 </LinearLayout>

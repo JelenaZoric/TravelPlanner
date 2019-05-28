@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_height="wrap_content"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -13,7 +12,7 @@
     tools:context=".NewTravelActivity"
     tools:showIn="@layout/app_bar_new_travel">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -36,23 +35,25 @@
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:orientation="horizontal"
             android:paddingLeft="@dimen/nav_header_vertical_spacing"
-            android:paddingRight="@dimen/nav_header_vertical_spacing">
+            android:paddingRight="@dimen/nav_header_vertical_spacing"
+            android:paddingBottom="@dimen/activity_vertical_margin">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="start"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_gravity="start">
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/prompt_origin_date"/>
+                    android:text="@string/prompt_origin_date" />
+
                 <Spinner
                     android:id="@+id/origin_date"
                     android:layout_width="match_parent"
@@ -64,13 +65,15 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_gravity="end">
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/prompt_origin_time"/>
+                    android:text="@string/prompt_origin_time" />
+
                 <Spinner
                     android:id="@+id/origin_time"
                     android:layout_width="match_parent"
@@ -99,24 +102,26 @@
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:orientation="horizontal"
             android:paddingLeft="@dimen/nav_header_vertical_spacing"
-            android:paddingRight="@dimen/nav_header_vertical_spacing">
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingRight="@dimen/nav_header_vertical_spacing"
+            android:paddingBottom="@dimen/activity_vertical_margin">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="start"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_gravity="start">
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/prompt_destination_date"/>
+                    android:text="@string/prompt_destination_date" />
+
                 <Spinner
                     android:id="@+id/destination_date"
                     android:layout_width="match_parent"
@@ -128,13 +133,15 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_gravity="end">
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/prompt_destination_time"/>
+                    android:text="@string/prompt_destination_time" />
+
                 <Spinner
                     android:id="@+id/destination_time"
                     android:layout_width="match_parent"
@@ -149,15 +156,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/login_vertical_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/nav_header_vertical_spacing"
-            android:paddingRight="@dimen/nav_header_vertical_spacing">
+            android:paddingTop="@dimen/login_vertical_margin"
+            android:paddingRight="@dimen/nav_header_vertical_spacing"
+            android:paddingBottom="@dimen/activity_vertical_margin">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/prompt_mode"/>
+                android:text="@string/prompt_mode" />
+
             <Spinner
                 android:id="@+id/mode"
                 android:layout_width="match_parent"
@@ -166,5 +174,5 @@
                 android:spinnerMode="dropdown" />
         </LinearLayout>
 
-    </FrameLayout>
-</android.support.constraint.ConstraintLayout>
+    </LinearLayout>
+</FrameLayout>

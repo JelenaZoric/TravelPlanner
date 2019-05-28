@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import static java.lang.Math.abs;
+
 public class Mocker {
 
     private static final String[] CITIES = {"Moscow", "Rome", "Paris", "London"};
@@ -116,7 +118,7 @@ public class Mocker {
         user.email = EMAIL;
 
         Random random = new Random();
-        int nameIdx = random.nextInt() % 2;
+        int nameIdx = random.nextInt(2);
 
         user.firstName = FIRST_NAME[nameIdx];
         user.lastName = LAST_NAME;
@@ -137,7 +139,7 @@ public class Mocker {
             Object object = new Object();
             object.type = type;
 
-            int randomNameIdx = random.nextInt() % 2;
+            int randomNameIdx = random.nextInt(2);
 
             switch (type) {
                 case FOOD:
@@ -166,7 +168,7 @@ public class Mocker {
                     break;
             }
 
-            int randomAddressNumber = random.nextInt() % 300;
+            int randomAddressNumber = random.nextInt(300);
             object.address = String.format(Locale.getDefault(), ADDRESS_PATTERN, randomAddressNumber);
 
             object.email = String.format(
@@ -183,7 +185,9 @@ public class Mocker {
                     random.nextInt(10));
 
             object.location = mockLocation();
-            object.rating = random.nextDouble() % 5;
+            object.rating = abs(random.nextDouble() * 5);
+
+            object.description = mockText();
 
             objects.add(object);
         }
@@ -194,8 +198,8 @@ public class Mocker {
     public static List<Double> mockCoordinates() {
         Random random = new Random();
 
-        double latitude = random.nextDouble() % 360 - 180;
-        double longitude = random.nextDouble() % 180 - 90;
+        double latitude = random.nextDouble() * 360 - 180;
+        double longitude = random.nextDouble() * 180 - 90;
 
         return Arrays.asList(latitude, longitude);
     }
@@ -203,8 +207,8 @@ public class Mocker {
     public static List<Double> mockCoordinates(double centerLat, double centerLong) {
         Random random = new Random();
 
-        double latitude = (random.nextDouble() % 360 - 180) * 0.00001 + centerLat;
-        double longitude = (random.nextDouble() % 180 - 90) * 0.00001 - centerLong;
+        double latitude = (random.nextDouble() * 360 - 180) * 0.00001 + centerLat;
+        double longitude = (random.nextDouble() * 180 - 90) * 0.00001 - centerLong;
 
         return Arrays.asList(latitude, longitude);
     }
@@ -255,7 +259,7 @@ public class Mocker {
             ActivityType type = ActivityType.values()[random.nextInt(ActivityType.values().length)];
             activity.type = type;
             activity.object = mockObjects(1, type).get(0);
-            activity.time = LocalTime.now().minusHours(random.nextInt(LocalTime.now().getHour()));
+            activity.time = LocalTime.of(random.nextInt(24), random.nextInt(60), random.nextInt(60), 0);
 
             activities.add(activity);
         }
@@ -271,18 +275,24 @@ public class Mocker {
             Comment comment = new Comment();
             comment.user = mockUser();
 
-            comment.rating = random.nextDouble() % 5;
+            comment.rating = random.nextDouble() * 5;
+            comment.text = mockText();
 
-            int sentenceCount = random.nextInt(COMMENTS.length);
-            StringBuilder content = new StringBuilder();
-
-            for (int j = 0; j < sentenceCount; j++) {
-                content.append(random.nextInt(COMMENTS.length - 1));
-            }
-            comment.text = content.toString();
+            comments.add(comment);
         }
 
         return comments;
     }
 
+    private static String mockText() {
+        Random random = new Random();
+
+        int sentenceCount = random.nextInt(COMMENTS.length);
+        StringBuilder content = new StringBuilder();
+
+        for (int j = 0; j < sentenceCount; j++) {
+            content.append(COMMENTS[random.nextInt(COMMENTS.length - 1)]);
+        }
+        return content.toString();
+    }
 }

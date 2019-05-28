@@ -42,13 +42,13 @@
     <string name="prompt_mode">Travel mode</string>
     <string name="prompt_new_route">Route name</string>
     <string name="prompt_route_date">Planned date</string>
-    <string name="prompt_new_comment">Say what you think about this object</string>
+    <string name="prompt_new_comment">Say what you think</string>
     <string name="prompt_rating">Rate this object</string>
     <string name="prompt_activity_type">What do you want to do</string>
     <string name="prompt_activity_time">What time do you want to do it</string>
-    <string name="prompt_new_item">New item</string>
+    <string name="prompt_new_item">Add item</string>
 
-    <string name="accommodation_info">Basic info about accommodation</string>
+    <string name="accommodation_info">Hotel</string>
     <string name="items_list_title">Check your packing list!</string>
 
     <string name="dummy_obj_description">

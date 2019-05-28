@@ -22,6 +22,7 @@ public class NewTravelActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Spinner spinner = findViewById(R.id.mode);
+        //TODO check this
         spinner.setAdapter(new ArrayAdapter<>(
                 this, R.layout.support_simple_spinner_dropdown_item, TransportationMode.values()));
     }

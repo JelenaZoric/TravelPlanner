@@ -18,6 +18,7 @@ import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.ActivityType;
 import com.ftn.uns.travelplaner.model.Object;
 
+import java.util.Locale;
 import java.util.Random;
 
 public class ObjectActivity extends AppCompatActivity {
@@ -53,16 +54,23 @@ public class ObjectActivity extends AppCompatActivity {
         setTitle(object.name);
         ImageView imageView = findViewById(R.id.object_image);
         TextView addressView = findViewById(R.id.object_address);
+        TextView emailView = findViewById(R.id.object_email);
+        TextView phoneView = findViewById(R.id.object_phone);
         TextView ratingView = findViewById(R.id.object_rating);
         TextView descriptionView = findViewById(R.id.object_description);
 
-        imageView.setImageURI(Uri.parse(object.imagePath));
+        if(object.imagePath != null) {
+            imageView.setImageURI(Uri.parse(object.imagePath));
+        }
+
         addressView.setText(object.address);
-        ratingView.setText(String.valueOf(object.rating));
+        ratingView.setText(String.format(Locale.getDefault(),"%.1f", object.rating));
         descriptionView.setText(object.description);
+        emailView.setText(object.email);
+        phoneView.setText(object.phoneNumber);
 
         ListView commentsView = findViewById(R.id.comments);
-        commentsView.setAdapter(new CommentsAdapter(ObjectActivity.this, Mocker.mockComments(random.nextInt(10) + 1)));
+        commentsView.setAdapter(new CommentsAdapter(ObjectActivity.this, Mocker.mockComments(random.nextInt(11))));
     }
 
     @Override

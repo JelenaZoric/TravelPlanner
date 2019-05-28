@@ -54,7 +54,7 @@ public class RoutesActivity extends AppCompatActivity
     private void setState() {
         ListView routesView = findViewById(R.id.routes_list);
         Random random = new Random();
-        routesView.setAdapter(new RoutesAdapter(RoutesActivity.this, Mocker.mockRoutes(random.nextInt(10) + 1)));
+        routesView.setAdapter(new RoutesAdapter(RoutesActivity.this, Mocker.mockRoutes(random.nextInt(11))));
 
         setOnClickListener(routesView);
     }

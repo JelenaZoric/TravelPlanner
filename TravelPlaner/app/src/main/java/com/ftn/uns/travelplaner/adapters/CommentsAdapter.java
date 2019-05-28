@@ -11,6 +11,7 @@ import com.ftn.uns.travelplaner.R;
 import com.ftn.uns.travelplaner.model.Comment;
 
 import java.util.List;
+import java.util.Locale;
 
 public class CommentsAdapter extends ArrayAdapter<Comment> {
 
@@ -51,7 +52,7 @@ public class CommentsAdapter extends ArrayAdapter<Comment> {
 
         userView.setText(String.format("%s %s", comment.user.firstName, comment.user.lastName));
         descriptionView.setText(comment.text);
-        ratingView.setText(String.valueOf(comment.rating));
+        ratingView.setText(String.format(Locale.getDefault(),"%.1f", comment.rating));
 
         return rowView;
     }

@@ -24,19 +24,19 @@
         <TextView
             android:id="@+id/comment_rating"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:autoSizeTextType="uniform"
-            android:fadingEdge="horizontal|vertical"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:textColor="@color/colorPrimaryDark"
-            android:textStyle="bold" />
+            android:textSize="18sp"/>
     </LinearLayout>
 
     <TextView
         android:id="@+id/comment_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/dummy_obj_description"/>
+        android:justificationMode="inter_word"
+        android:text="@string/dummy_obj_description"
+        android:textAlignment="viewStart"/>
 
 </LinearLayout>

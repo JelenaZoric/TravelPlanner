@@ -12,7 +12,9 @@ public class DateTimeFormatter {
     public static final java.time.format.DateTimeFormatter DATE_TIME_PATTERN =
             java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    private static final String DATE_PATTERN = "%d %s %d";
+    public static final java.time.format.DateTimeFormatter DATE_PATTERN =
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     private static final String DURATION_PATTERN = "%s -> %s";
     private static final String TIME_PATTERN = "%02d:%02d";
 
@@ -27,12 +29,7 @@ public class DateTimeFormatter {
     }
 
     public static String formatDate(LocalDate date) {
-        return String.format(
-                Locale.getDefault(),
-                DATE_PATTERN,
-                date.getDayOfMonth(),
-                date.getMonth().name(),
-                date.getYear());
+        return DATE_PATTERN.format(date);
     }
 
     public static String formatDateTime(LocalDateTime dateTime) {

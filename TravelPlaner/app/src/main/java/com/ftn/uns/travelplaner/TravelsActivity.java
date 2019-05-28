@@ -54,7 +54,7 @@ public class TravelsActivity extends AppCompatActivity
     private void setState() {
         ListView travelsView = findViewById(R.id.travels_list);
         Random random = new Random();
-        travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, Mocker.mockTravels(random.nextInt(10) + 1)));
+        travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, Mocker.mockTravels(random.nextInt(11))));
 
         setOnClickListener(travelsView);
     }

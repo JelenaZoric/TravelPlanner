@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.ActivityType;
 import com.ftn.uns.travelplaner.model.Travel;
 import com.ftn.uns.travelplaner.util.DateTimeFormatter;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -70,17 +71,18 @@ public class TravelInfoActivity extends AppCompatActivity
         TextView endTimeView = findViewById(R.id.travel_end_time);
         endTimeView.setText(DateTimeFormatter.formatDateTime(travel.destination.departure));
 
+        travel.accommodation = Mocker.mockObjects(1, ActivityType.ACCOMMODATION).get(0);
         TextView accommodationNameView = findViewById(R.id.accommodation_name);
-        accommodationNameView.setText(travel.destination.location.toString());
+        accommodationNameView.setText(travel.accommodation.name);
 
         TextView accommodationAddressView = findViewById(R.id.accommodation_address);
-        accommodationAddressView.setText(travel.destination.location.toString());
+        accommodationAddressView.setText(travel.accommodation.address);
 
         TextView accommodationEmailView = findViewById(R.id.accommodation_email);
-        accommodationEmailView.setText(travel.destination.location.toString());
+        accommodationEmailView.setText(travel.accommodation.email);
 
         TextView accommodationPhoneView = findViewById(R.id.accommodation_phone_number);
-        accommodationPhoneView.setText(travel.destination.location.toString());
+        accommodationPhoneView.setText(travel.accommodation.phoneNumber);
 
     }
 

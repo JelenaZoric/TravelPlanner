@@ -11,6 +11,7 @@ import com.ftn.uns.travelplaner.R;
 import com.ftn.uns.travelplaner.model.Object;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ObjectsAdapter extends ArrayAdapter<Object> {
 
@@ -50,7 +51,7 @@ public class ObjectsAdapter extends ArrayAdapter<Object> {
         Object object = getItem(position);
         nameView.setText(object.name);
         addressView.setText(object.address);
-        ratingView.setText(String.valueOf(object.rating));
+        ratingView.setText(String.format(Locale.getDefault(), "%.1f", object.rating));
 
         return rowView;
     }

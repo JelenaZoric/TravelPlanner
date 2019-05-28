@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplaner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +15,8 @@ import android.widget.Spinner;
 import com.ftn.uns.travelplaner.adapters.ObjectsAdapter;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.ActivityType;
+
+import java.util.Random;
 
 public class NewActivityActivity extends AppCompatActivity {
 
@@ -36,8 +39,12 @@ public class NewActivityActivity extends AppCompatActivity {
                 String selectedItem = parentView.getSelectedItem().toString();
 
                 ListView objectsView = findViewById(R.id.objects);
+
+                Random random = new Random();
                 objectsView.setAdapter(new ObjectsAdapter(
-                        NewActivityActivity.this, Mocker.mockObjects(10, ActivityType.valueOf(selectedItem))));
+                        NewActivityActivity.this, Mocker.mockObjects(random.nextInt(11), ActivityType.valueOf(selectedItem.toUpperCase()))));
+
+                setOnClickListener(objectsView);
             }
 
             @Override
@@ -46,6 +53,17 @@ public class NewActivityActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setOnClickListener(ListView listView) {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                Intent intent = new Intent(NewActivityActivity.this, ObjectActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
