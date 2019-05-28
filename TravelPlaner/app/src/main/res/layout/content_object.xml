@@ -34,14 +34,12 @@
             android:id="@+id/object_address"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="5"
-            android:text="Bulevar Oslobodjenja 26, Novi Sad"/>
+            android:layout_weight="5"/>
         <TextView
             android:id="@+id/object_rating"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="5/5"
             android:autoSizeTextType="uniform"
             android:fadingEdge="horizontal|vertical"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"

@@ -19,18 +19,18 @@
         android:orientation="horizontal"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_vertical_margin">
+
         <TextView
             android:layout_weight="6"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/route_name"
-            android:text="Route 123"/>
+            android:id="@+id/route_name"/>
 
         <TextView
+            android:id="@+id/route_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="12/4/2130"
             android:textDirection="rtl" />
     </LinearLayout>
 

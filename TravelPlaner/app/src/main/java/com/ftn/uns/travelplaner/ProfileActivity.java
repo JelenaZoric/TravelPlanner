@@ -10,6 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.User;
 
 public class ProfileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -21,14 +26,32 @@ public class ProfileActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setState();
+    }
+
+    private void setState() {
+        User user = Mocker.mockUser();
+
+        EditText emailView = findViewById(R.id.email);
+        emailView.setText(user.email);
+
+        TextView firstNameView = findViewById(R.id.first_name);
+        firstNameView.setText(user.firstName);
+
+        TextView lastNameView = findViewById(R.id.last_name);
+        lastNameView.setText(user.lastName);
+
+        TextView locationView = findViewById(R.id.location);
+        locationView.setText(user.location.toString());
     }
 
     @Override

@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.ftn.uns.travelplaner.adapters.TravelsAdapter;
@@ -49,6 +48,10 @@ public class TravelsActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        setState();
+    }
+
+    private void setState() {
         ListView travelsView = findViewById(R.id.travels_list);
         Random random = new Random();
         travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, Mocker.mockTravels(random.nextInt(10) + 1)));

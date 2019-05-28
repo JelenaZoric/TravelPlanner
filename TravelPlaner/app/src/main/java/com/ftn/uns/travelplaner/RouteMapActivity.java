@@ -10,9 +10,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.Route;
+import com.ftn.uns.travelplaner.util.DateTimeFormatter;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
+import java.util.Random;
 
 public class RouteMapActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +43,37 @@ public class RouteMapActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setState();
+    }
+
+    private void setState() {
+        Route route = Mocker.mockRoutes(1).get(0);
+
+        TextView nameView = findViewById(R.id.route_name);
+        TextView dateView = findViewById(R.id.route_date);
+
+        nameView.setText(route.name);
+        dateView.setText(DateTimeFormatter.formatDate(route.date));
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        Random random = new Random();
+
+        int maxIdx = random.nextInt(10 + 1);
+        List<Double> centerCoordinates = Mocker.mockCoordinates();
+
+        for (int i = 0; i < maxIdx; i++) {
+            List<Double> coordinates = Mocker.mockCoordinates(centerCoordinates.get(0), centerCoordinates.get(1));
+            LatLng destination = new LatLng(coordinates.get(0), coordinates.get(1));
+
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(destination);
+        }
+
+        CameraPosition cameraPosition = new CameraPosition(new LatLng(centerCoordinates.get(0), centerCoordinates.get(1)), 15, 0, 0);
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     @Override

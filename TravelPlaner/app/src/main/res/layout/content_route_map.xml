@@ -23,19 +23,19 @@
             android:layout_weight="6"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/route_name"
-            android:text="Route 123"/>
+            android:id="@+id/route_name" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="12/4/2130"
+            android:id="@+id/route_date"
             android:textDirection="rtl" />
     </LinearLayout>
 
     <com.google.android.gms.maps.MapView
+        android:id="@+id/routes_map"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

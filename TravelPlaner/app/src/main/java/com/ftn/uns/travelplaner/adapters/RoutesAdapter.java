@@ -8,17 +8,17 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ftn.uns.travelplaner.R;
-import com.ftn.uns.travelplaner.model.Travel;
+import com.ftn.uns.travelplaner.model.Route;
 import com.ftn.uns.travelplaner.util.DateTimeFormatter;
 
 import java.util.List;
 
-public class TravelsAdapter extends ArrayAdapter<Travel> {
+public class RoutesAdapter extends ArrayAdapter<Route> {
 
     private final Context context;
-    private final List<Travel> data;
+    private final List<Route> data;
 
-    public TravelsAdapter(Context context, List<Travel> data) {
+    public RoutesAdapter(Context context, List<Route> data) {
         super(context, -1, data);
         this.context = context;
         this.data = data;
@@ -30,7 +30,7 @@ public class TravelsAdapter extends ArrayAdapter<Travel> {
     }
 
     @Override
-    public Travel getItem(int position) {
+    public Route getItem(int position) {
         return data.get(position);
     }
 
@@ -42,14 +42,14 @@ public class TravelsAdapter extends ArrayAdapter<Travel> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.travels_list_item, parent, false);
+        View rowView = inflater.inflate(R.layout.route_list_item, parent, false);
 
-        TextView destinationView = rowView.findViewById(R.id.travel_listitem_destination);
-        TextView durationView = rowView.findViewById(R.id.travel_listitem_duration);
+        TextView nameView = rowView.findViewById(R.id.route_name);
+        TextView dateView = rowView.findViewById(R.id.route_date);
 
-        Travel travel = getItem(position);
-        destinationView.setText(travel.destination.location.toString());
-        durationView.setText(DateTimeFormatter.formatDurationView(travel.origin, travel.destination));
+        Route route = getItem(position);
+        nameView.setText(route.name);
+        dateView.setText(DateTimeFormatter.formatDate(route.date));
 
         return rowView;
     }

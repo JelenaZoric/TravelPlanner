@@ -13,8 +13,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.ftn.uns.travelplaner.adapters.RoutesAdapter;
+import com.ftn.uns.travelplaner.mock.Mocker;
+
+import java.util.Random;
 
 public class RoutesActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -44,12 +48,15 @@ public class RoutesActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        String[] travels = {"Route1", "Route2", "Route3"};
-        ListView travelsView = findViewById(R.id.routes_list);
-        travelsView.setAdapter(new ArrayAdapter<>(
-                RoutesActivity.this, android.R.layout.simple_list_item_1, travels));
+        setState();
+    }
 
-        setOnClickListener(travelsView);
+    private void setState() {
+        ListView routesView = findViewById(R.id.routes_list);
+        Random random = new Random();
+        routesView.setAdapter(new RoutesAdapter(RoutesActivity.this, Mocker.mockRoutes(random.nextInt(10) + 1)));
+
+        setOnClickListener(routesView);
     }
 
     private void setOnClickListener(ListView listView) {

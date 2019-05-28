@@ -10,9 +10,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.Travel;
+import com.ftn.uns.travelplaner.util.DateTimeFormatter;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
 
 public class TravelInfoActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +33,9 @@ public class TravelInfoActivity extends AppCompatActivity
         setContentView(R.layout.activity_travel_info);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        MapView mapView = findViewById(R.id.accommodation_map);
+        mapView.getMapAsync(this);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -29,6 +45,51 @@ public class TravelInfoActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setState();
+    }
+
+    private void setState() {
+        Travel travel = Mocker.mockTravels(1).get(0);
+
+        TextView titleView = findViewById(R.id.travel_destination);
+        titleView.setText(travel.destination.location.toString());
+
+        TextView durationView = findViewById(R.id.travel_duration);
+        durationView.setText(DateTimeFormatter.formatDurationView(travel.origin, travel.destination));
+
+        TextView startPointView = findViewById(R.id.travel_start_point);
+        startPointView.setText(travel.origin.location.toString());
+
+        TextView startTimeView = findViewById(R.id.travel_start_time);
+        startTimeView.setText(DateTimeFormatter.formatDateTime(travel.origin.departure));
+
+        TextView endPointView = findViewById(R.id.travel_end_point);
+        endPointView.setText(travel.destination.location.toString());
+
+        TextView endTimeView = findViewById(R.id.travel_end_time);
+        endTimeView.setText(DateTimeFormatter.formatDateTime(travel.destination.departure));
+
+        TextView accommodationNameView = findViewById(R.id.accommodation_name);
+        accommodationNameView.setText(travel.destination.location.toString());
+
+        TextView accommodationAddressView = findViewById(R.id.accommodation_address);
+        accommodationAddressView.setText(travel.destination.location.toString());
+
+        TextView accommodationEmailView = findViewById(R.id.accommodation_email);
+        accommodationEmailView.setText(travel.destination.location.toString());
+
+        TextView accommodationPhoneView = findViewById(R.id.accommodation_phone_number);
+        accommodationPhoneView.setText(travel.destination.location.toString());
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        List<Double> coordinates = Mocker.mockCoordinates();
+        LatLng destination = new LatLng(coordinates.get(0), coordinates.get(1));
+        CameraPosition position = new CameraPosition(destination, 15, 0, 0);
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(position));
     }
 
     @Override

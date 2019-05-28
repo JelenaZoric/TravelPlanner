@@ -10,6 +10,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.ftn.uns.travelplaner.adapters.TravelItemsAdapter;
+import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.Item;
+
+import java.util.Random;
 
 public class TravelItemsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -22,6 +32,21 @@ public class TravelItemsActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        EditText newItemView = findViewById(R.id.new_travel_item);
+        newItemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    Item item = new Item();
+                    item.name = ((EditText) v).getText().toString();
+
+                    Toast.makeText(getApplicationContext(), String.format("New item: '%s'", item.name), Toast.LENGTH_SHORT);
+                    ((EditText) v).setText("");
+                }
+            }
+        });
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -30,6 +55,14 @@ public class TravelItemsActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setState();
+    }
+
+    private void setState() {
+        ListView itemsView = findViewById(R.id.travel_items_list);
+        Random random = new Random();
+        itemsView.setAdapter(new TravelItemsAdapter(TravelItemsActivity.this, Mocker.mockItems(random.nextInt(10) + 1)));
     }
 
     @Override

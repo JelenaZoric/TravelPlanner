@@ -8,17 +8,16 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ftn.uns.travelplaner.R;
-import com.ftn.uns.travelplaner.model.Travel;
-import com.ftn.uns.travelplaner.util.DateTimeFormatter;
+import com.ftn.uns.travelplaner.model.Comment;
 
 import java.util.List;
 
-public class TravelsAdapter extends ArrayAdapter<Travel> {
+public class CommentsAdapter extends ArrayAdapter<Comment> {
 
     private final Context context;
-    private final List<Travel> data;
+    private final List<Comment> data;
 
-    public TravelsAdapter(Context context, List<Travel> data) {
+    public CommentsAdapter(Context context, List<Comment> data) {
         super(context, -1, data);
         this.context = context;
         this.data = data;
@@ -30,7 +29,7 @@ public class TravelsAdapter extends ArrayAdapter<Travel> {
     }
 
     @Override
-    public Travel getItem(int position) {
+    public Comment getItem(int position) {
         return data.get(position);
     }
 
@@ -42,15 +41,19 @@ public class TravelsAdapter extends ArrayAdapter<Travel> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.travels_list_item, parent, false);
+        View rowView = inflater.inflate(R.layout.comments_list_item, parent, false);
 
-        TextView destinationView = rowView.findViewById(R.id.travel_listitem_destination);
-        TextView durationView = rowView.findViewById(R.id.travel_listitem_duration);
+        TextView userView = rowView.findViewById(R.id.comment_user);
+        TextView descriptionView = rowView.findViewById(R.id.comment_content);
+        TextView ratingView = rowView.findViewById(R.id.comment_rating);
 
-        Travel travel = getItem(position);
-        destinationView.setText(travel.destination.location.toString());
-        durationView.setText(DateTimeFormatter.formatDurationView(travel.origin, travel.destination));
+        Comment comment = getItem(position);
+
+        userView.setText(String.format("%s %s", comment.user.firstName, comment.user.lastName));
+        descriptionView.setText(comment.text);
+        ratingView.setText(String.valueOf(comment.rating));
 
         return rowView;
     }
+
 }

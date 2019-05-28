@@ -5,6 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+import com.ftn.uns.travelplaner.model.TransportationMode;
 
 public class NewTravelActivity extends AppCompatActivity {
 
@@ -16,6 +20,10 @@ public class NewTravelActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Spinner spinner = findViewById(R.id.mode);
+        spinner.setAdapter(new ArrayAdapter<>(
+                this, R.layout.support_simple_spinner_dropdown_item, TransportationMode.values()));
     }
 
     @Override

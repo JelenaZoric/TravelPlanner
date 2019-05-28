@@ -64,30 +64,45 @@
 
     </LinearLayout>
 
-    <TextView
+    <!--<TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Basic info about destination" />
+
     <ListView
+        android:id="@+id/informations"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"/>-->
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Basic info about accommodation" />
+        android:text="@string/accommodation_info" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hotel Moskva"
-        android:id="@+id/travel_accommodation_title"/>
+        android:id="@+id/accommodation_name"
+        android:text="Hotel name"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hotel Moskva"
-        android:id="@+id/travel_accommodation_address"/>
+        android:id="@+id/accommodation_address"
+        android:text="hotel addresss 1234"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/accommodation_email"
+        android:text="email@email.com"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/accommodation_phone_number"
+        android:text="1234567890"/>
 
     <com.google.android.gms.maps.MapView
+        android:id="@+id/accommodation_map"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>

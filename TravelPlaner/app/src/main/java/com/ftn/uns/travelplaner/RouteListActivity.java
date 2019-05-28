@@ -13,8 +13,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.ftn.uns.travelplaner.adapters.ActivitiesAdapter;
+import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.Route;
+import com.ftn.uns.travelplaner.util.DateTimeFormatter;
+
+import java.util.Random;
 
 public class RouteListActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -44,12 +51,23 @@ public class RouteListActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        String[] travels = {"Route1", "Route2", "Route3"};
-        ListView travelsView = findViewById(R.id.routes_list_list);
-        travelsView.setAdapter(new ArrayAdapter<>(
-                RouteListActivity.this, android.R.layout.simple_list_item_1, travels));
+        setState();
+    }
 
-        setOnClickListener(travelsView);
+    private void setState() {
+        Route route = Mocker.mockRoutes(1).get(0);
+
+        TextView nameView = findViewById(R.id.route_name);
+        TextView dateView = findViewById(R.id.route_date);
+
+        nameView.setText(route.name);
+        dateView.setText(DateTimeFormatter.formatDate(route.date));
+
+        ListView activitiesView = findViewById(R.id.routes_list_list);
+        Random random = new Random();
+        activitiesView.setAdapter(new ActivitiesAdapter(RouteListActivity.this, Mocker.mockActivities(random.nextInt(10) + 1)));
+
+        setOnClickListener(activitiesView);
     }
 
     private void setOnClickListener(ListView listView) {

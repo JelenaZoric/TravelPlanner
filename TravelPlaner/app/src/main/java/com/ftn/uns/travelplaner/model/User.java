@@ -8,5 +8,5 @@ public class User implements Serializable {
     public String password;
     public String firstName;
     public String lastName;
-    public String location;
+    public Location location;
 }
