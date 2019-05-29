@@ -6,7 +6,6 @@ import java.util.List;
 
 public class Travel implements Serializable {
 
-    public User user;
     public Transportation origin;
     public Transportation destination;
     public String currency;

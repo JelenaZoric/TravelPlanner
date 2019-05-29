@@ -2,16 +2,18 @@ package com.ftn.uns.travelplaner;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.Location;
+import com.ftn.uns.travelplaner.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -141,6 +143,16 @@ public class RegisterActivity extends AppCompatActivity {
             mAuthTask = null;
 
             if (success) {
+                Mocker.db = new User();
+                Mocker.db.email = mEmail;
+                Mocker.db.firstName = mFirstName;
+                Mocker.db.lastName = mLastName;
+
+                String[] parts = mLocation.split(",");
+                Mocker.db.location = new Location();
+                Mocker.db.location.city = parts[0];
+                Mocker.db.location.country = parts[1];
+
                 Intent intent = new Intent(RegisterActivity.this, TravelsActivity.class);
                 startActivity(intent);
             } else {

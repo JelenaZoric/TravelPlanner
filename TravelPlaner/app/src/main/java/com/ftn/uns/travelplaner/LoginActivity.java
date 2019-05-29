@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.ftn.uns.travelplaner.mock.Mocker;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -78,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
-        /*if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -92,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
-        }*/
+        }
 
         if (cancel) {
             focusView.requestFocus();
@@ -143,6 +145,8 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
 
             if (success) {
+                Mocker.db = Mocker.mockUser();
+                Mocker.db.email = mEmail;
                 Intent intent = new Intent(LoginActivity.this, TravelsActivity.class);
                 startActivity(intent);
             } else {

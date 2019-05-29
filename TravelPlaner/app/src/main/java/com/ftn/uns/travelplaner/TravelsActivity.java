@@ -53,8 +53,7 @@ public class TravelsActivity extends AppCompatActivity
 
     private void setState() {
         ListView travelsView = findViewById(R.id.travels_list);
-        Random random = new Random();
-        travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, Mocker.mockTravels(random.nextInt(11))));
+        travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, Mocker.db.travels));
 
         setOnClickListener(travelsView);
     }
@@ -64,6 +63,7 @@ public class TravelsActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
+                Mocker.dbTravel = Mocker.db.travels.get(position);
                 Intent intent = new Intent(TravelsActivity.this, TravelInfoActivity.class);
                 startActivity(intent);
             }
@@ -105,7 +105,8 @@ public class TravelsActivity extends AppCompatActivity
             Intent intent = new Intent(TravelsActivity.this, ProfileActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
-            //do logout
+            Intent intent = new Intent(TravelsActivity.this, LoginActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

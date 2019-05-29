@@ -46,10 +46,7 @@ public class ObjectActivity extends AppCompatActivity {
 
     private void setState() {
 
-        Random random = new Random();
-        Object object = Mocker.mockObjects(
-                1, ActivityType.values()[random.nextInt(ActivityType.values().length - 1) + 1])
-                .get(0);
+        Object object = Mocker.dbActivity.object;
 
         setTitle(object.name);
         ImageView imageView = findViewById(R.id.object_image);
@@ -59,18 +56,18 @@ public class ObjectActivity extends AppCompatActivity {
         TextView ratingView = findViewById(R.id.object_rating);
         TextView descriptionView = findViewById(R.id.object_description);
 
-        if(object.imagePath != null) {
+        if (object.imagePath != null) {
             imageView.setImageURI(Uri.parse(object.imagePath));
         }
 
         addressView.setText(object.address);
-        ratingView.setText(String.format(Locale.getDefault(),"%.1f", object.rating));
+        ratingView.setText(String.format(Locale.getDefault(), "%.1f", object.rating));
         descriptionView.setText(object.description);
         emailView.setText(object.email);
         phoneView.setText(object.phoneNumber);
 
         ListView commentsView = findViewById(R.id.comments);
-        commentsView.setAdapter(new CommentsAdapter(ObjectActivity.this, Mocker.mockComments(random.nextInt(11))));
+        commentsView.setAdapter(new CommentsAdapter(ObjectActivity.this, Mocker.dbActivity.object.comments));
     }
 
     @Override

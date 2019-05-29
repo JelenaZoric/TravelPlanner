@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="26sp"
+            android:textSize="24sp"
             android:layout_weight="7" />
 
         <TextView
@@ -27,7 +27,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/colorAccent"
             android:textSize="18sp"/>
     </LinearLayout>
 

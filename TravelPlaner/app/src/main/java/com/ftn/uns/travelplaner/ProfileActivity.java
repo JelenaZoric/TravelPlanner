@@ -39,7 +39,7 @@ public class ProfileActivity extends AppCompatActivity
     }
 
     private void setState() {
-        User user = Mocker.mockUser();
+        User user = Mocker.db;
 
         EditText emailView = findViewById(R.id.email);
         emailView.setText(user.email);
@@ -66,7 +66,7 @@ public class ProfileActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_full_bar, menu);
         return true;
     }
 
@@ -78,6 +78,14 @@ public class ProfileActivity extends AppCompatActivity
             return true;
         }
 
+        if (id == R.id.action_edit) {
+            return true;
+        }
+
+        if(id == R.id.action_delete) {
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -86,7 +94,8 @@ public class ProfileActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_logout) {
-            //do logout
+            Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_travels) {
             Intent intent = new Intent(ProfileActivity.this, TravelsActivity.class);
             startActivity(intent);

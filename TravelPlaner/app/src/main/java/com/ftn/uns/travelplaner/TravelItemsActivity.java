@@ -19,8 +19,6 @@ import com.ftn.uns.travelplaner.adapters.TravelItemsAdapter;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Item;
 
-import java.util.Random;
-
 public class TravelItemsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -61,8 +59,7 @@ public class TravelItemsActivity extends AppCompatActivity
 
     private void setState() {
         ListView itemsView = findViewById(R.id.travel_items_list);
-        Random random = new Random();
-        itemsView.setAdapter(new TravelItemsAdapter(TravelItemsActivity.this, Mocker.mockItems(random.nextInt(11))));
+        itemsView.setAdapter(new TravelItemsAdapter(TravelItemsActivity.this, Mocker.dbTravel.items));
     }
 
     @Override
@@ -100,7 +97,8 @@ public class TravelItemsActivity extends AppCompatActivity
             Intent intent = new Intent(TravelItemsActivity.this, ProfileActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
-            //do logout
+            Intent intent = new Intent(TravelItemsActivity.this, LoginActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_travels) {
             Intent intent = new Intent(TravelItemsActivity.this, TravelsActivity.class);
             startActivity(intent);

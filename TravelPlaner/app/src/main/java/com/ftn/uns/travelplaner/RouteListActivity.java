@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.ftn.uns.travelplaner.adapters.ActivitiesAdapter;
 import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.Activity;
 import com.ftn.uns.travelplaner.model.Route;
 import com.ftn.uns.travelplaner.util.DateTimeFormatter;
 
@@ -55,17 +56,15 @@ public class RouteListActivity extends AppCompatActivity
     }
 
     private void setState() {
-        Route route = Mocker.mockRoutes(1).get(0);
+        Route route = Mocker.dbRoute;
 
-        TextView nameView = findViewById(R.id.route_name);
+        setTitle(route.name);
+
         TextView dateView = findViewById(R.id.route_date);
-
-        nameView.setText(route.name);
         dateView.setText(DateTimeFormatter.formatDate(route.date));
 
         ListView activitiesView = findViewById(R.id.routes_list_list);
-        Random random = new Random();
-        activitiesView.setAdapter(new ActivitiesAdapter(RouteListActivity.this, Mocker.mockActivities(random.nextInt(11))));
+        activitiesView.setAdapter(new ActivitiesAdapter(RouteListActivity.this, Mocker.dbRoute.activities));
 
         setOnClickListener(activitiesView);
     }
@@ -75,6 +74,7 @@ public class RouteListActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
+                Mocker.dbActivity = Mocker.dbRoute.activities.get(position);
                 Intent intent = new Intent(RouteListActivity.this, ObjectActivity.class);
                 startActivity(intent);
             }
@@ -93,7 +93,7 @@ public class RouteListActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_full_bar, menu);
         return true;
     }
 
@@ -102,6 +102,14 @@ public class RouteListActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        if (id == R.id.action_edit) {
+            return true;
+        }
+
+        if(id == R.id.action_delete) {
             return true;
         }
 
@@ -116,7 +124,8 @@ public class RouteListActivity extends AppCompatActivity
             Intent intent = new Intent(RouteListActivity.this, ProfileActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
-            //do logout
+            Intent intent = new Intent(RouteListActivity.this, LoginActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_travels) {
             Intent intent = new Intent(RouteListActivity.this, TravelsActivity.class);
             startActivity(intent);

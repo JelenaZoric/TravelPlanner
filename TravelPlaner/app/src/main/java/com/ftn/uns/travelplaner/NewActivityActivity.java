@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,14 +16,28 @@ import android.widget.Spinner;
 
 import com.ftn.uns.travelplaner.adapters.ObjectsAdapter;
 import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.Activity;
 import com.ftn.uns.travelplaner.model.ActivityType;
+import com.ftn.uns.travelplaner.model.Object;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class NewActivityActivity extends AppCompatActivity {
 
+    Spinner typeView;
+    Spinner timeView;
+    Activity activity;
+    private List<Object> mockerObjects;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        initState();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_activity);
 
@@ -41,8 +57,9 @@ public class NewActivityActivity extends AppCompatActivity {
                 ListView objectsView = findViewById(R.id.objects);
 
                 Random random = new Random();
-                objectsView.setAdapter(new ObjectsAdapter(
-                        NewActivityActivity.this, Mocker.mockObjects(random.nextInt(11), ActivityType.valueOf(selectedItem.toUpperCase()))));
+                mockerObjects = Mocker.mockObjects(random.nextInt(2) + 1, ActivityType.valueOf(selectedItem.toUpperCase()));
+
+                objectsView.setAdapter(new ObjectsAdapter(NewActivityActivity.this, mockerObjects));
 
                 setOnClickListener(objectsView);
             }
@@ -53,6 +70,43 @@ public class NewActivityActivity extends AppCompatActivity {
             }
         });
 
+
+        timeView = findViewById(R.id.activity_time);
+        typeView = findViewById(R.id.activity_type);
+
+        setListeners(timeView);
+    }
+
+    private void setListeners(Spinner view) {
+        View.OnTouchListener spinnerOnTouch = new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    showTimePickerDialog(v);
+                }
+                return true;
+            }
+        };
+
+        View.OnKeyListener spinnerOnKey = new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                    showTimePickerDialog(v);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        };
+
+        view.setOnTouchListener(spinnerOnTouch);
+        view.setOnKeyListener(spinnerOnKey);
+    }
+
+    private void showTimePickerDialog(View v) {
+        TimePickerFragment newFragment = new TimePickerFragment();
+        newFragment.context = NewActivityActivity.this;
+        newFragment.view = (Spinner) v;
+        newFragment.show(this.getSupportFragmentManager(), "Time");
     }
 
     private void setOnClickListener(ListView listView) {
@@ -60,15 +114,22 @@ public class NewActivityActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Intent intent = new Intent(NewActivityActivity.this, ObjectActivity.class);
-                startActivity(intent);
+                activity.object = mockerObjects.get(position);
+                ListView objectsView = findViewById(R.id.objects);
+                objectsView.setAdapter(new ObjectsAdapter(NewActivityActivity.this, Arrays.asList(activity.object)));
             }
         });
     }
 
+    private void initState() {
+        this.activity = new Activity();
+        this.activity.object = new Object();
+        this.activity.type = ActivityType.ACCOMMODATION;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_new_bar, menu);
         return true;
     }
 
@@ -76,10 +137,23 @@ public class NewActivityActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_save) {
+            save();
+
+            Intent intent = new Intent(NewActivityActivity.this, RouteListActivity.class);
+            startActivity(intent);
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean save() {
+        activity.time = LocalTime.parse(timeView.getSelectedItem().toString(), DateTimeFormatter.ofPattern("HH:mm"));
+        activity.type = ActivityType.valueOf(typeView.getSelectedItem().toString().toUpperCase());
+
+        Mocker.dbRoute.activities.add(activity);
+        return true;
     }
 }

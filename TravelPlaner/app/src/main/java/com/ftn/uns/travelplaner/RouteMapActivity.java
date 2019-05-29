@@ -13,15 +13,18 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.Activity;
 import com.ftn.uns.travelplaner.model.Route;
 import com.ftn.uns.travelplaner.util.DateTimeFormatter;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -44,35 +47,41 @@ public class RouteMapActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.hotel_map);
+        mapFragment.getMapAsync(this);
+
         setState();
     }
 
     private void setState() {
-        Route route = Mocker.mockRoutes(1).get(0);
+        Route route = Mocker.dbRoute;
+        setTitle(route.name);
 
-        TextView nameView = findViewById(R.id.route_name);
         TextView dateView = findViewById(R.id.route_date);
-
-        nameView.setText(route.name);
         dateView.setText(DateTimeFormatter.formatDate(route.date));
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
-        Random random = new Random();
+        List<Double> centerCoordinates = Arrays.asList(
+                Mocker.dbTravel.accommodation.location.latitude,
+                Mocker.dbTravel.accommodation.location.longitude);
 
-        int maxIdx = random.nextInt(10 + 1);
-        List<Double> centerCoordinates = Mocker.mockCoordinates();
+        for (Activity activity: Mocker.dbRoute.activities) {
 
-        for (int i = 0; i < maxIdx; i++) {
-            List<Double> coordinates = Mocker.mockCoordinates(centerCoordinates.get(0), centerCoordinates.get(1));
+            List<Double> coordinates = Arrays.asList(
+                    activity.object.location.latitude,
+                    activity.object.location.longitude);
+
             LatLng destination = new LatLng(coordinates.get(0), coordinates.get(1));
 
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(destination);
+            map.addMarker(markerOptions);
         }
 
-        CameraPosition cameraPosition = new CameraPosition(new LatLng(centerCoordinates.get(0), centerCoordinates.get(1)), 15, 0, 0);
+        CameraPosition cameraPosition = new CameraPosition(new LatLng(centerCoordinates.get(0), centerCoordinates.get(1)), 10, 0, 0);
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
@@ -88,7 +97,7 @@ public class RouteMapActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_full_bar, menu);
         return true;
     }
 
@@ -97,6 +106,14 @@ public class RouteMapActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        if (id == R.id.action_edit) {
+            return true;
+        }
+
+        if(id == R.id.action_delete) {
             return true;
         }
 
@@ -111,7 +128,8 @@ public class RouteMapActivity extends AppCompatActivity
             Intent intent = new Intent(RouteMapActivity.this, ProfileActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
-            //do logout
+            Intent intent = new Intent(RouteMapActivity.this, LoginActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_travels) {
             Intent intent = new Intent(RouteMapActivity.this, TravelsActivity.class);
             startActivity(intent);

@@ -18,8 +18,6 @@ import android.widget.ListView;
 import com.ftn.uns.travelplaner.adapters.RoutesAdapter;
 import com.ftn.uns.travelplaner.mock.Mocker;
 
-import java.util.Random;
-
 public class RoutesActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -53,8 +51,7 @@ public class RoutesActivity extends AppCompatActivity
 
     private void setState() {
         ListView routesView = findViewById(R.id.routes_list);
-        Random random = new Random();
-        routesView.setAdapter(new RoutesAdapter(RoutesActivity.this, Mocker.mockRoutes(random.nextInt(11))));
+        routesView.setAdapter(new RoutesAdapter(RoutesActivity.this, Mocker.dbTravel.routes));
 
         setOnClickListener(routesView);
     }
@@ -64,6 +61,7 @@ public class RoutesActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
+                Mocker.dbRoute = Mocker.dbTravel.routes.get(position);
                 Intent intent = new Intent(RoutesActivity.this, RouteListActivity.class);
                 startActivity(intent);
             }
@@ -105,7 +103,8 @@ public class RoutesActivity extends AppCompatActivity
             Intent intent = new Intent(RoutesActivity.this, ProfileActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
-            //do logout
+            Intent intent = new Intent(RoutesActivity.this, LoginActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_travels) {
             Intent intent = new Intent(RoutesActivity.this, TravelsActivity.class);
             startActivity(intent);

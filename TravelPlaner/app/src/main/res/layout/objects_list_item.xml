@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:textSize="26sp"/>
+            android:textSize="24sp"/>
 
         <TextView
             android:id="@+id/object_address"
@@ -33,7 +33,7 @@
         android:layout_height="fill_parent"
         android:layout_weight="2"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorAccent"
         android:textDirection="rtl"
         android:textSize="18sp"/>
 

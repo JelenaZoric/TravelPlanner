@@ -18,11 +18,13 @@ import com.ftn.uns.travelplaner.model.Travel;
 import com.ftn.uns.travelplaner.util.DateTimeFormatter;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class TravelInfoActivity extends AppCompatActivity
@@ -35,8 +37,9 @@ public class TravelInfoActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        MapView mapView = findViewById(R.id.accommodation_map);
-        mapView.getMapAsync(this);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.hotel_map);
+        mapFragment.getMapAsync(this);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -51,13 +54,9 @@ public class TravelInfoActivity extends AppCompatActivity
     }
 
     private void setState() {
-        Travel travel = Mocker.mockTravels(1).get(0);
+        Travel travel = Mocker.dbTravel;
 
-        TextView titleView = findViewById(R.id.travel_destination);
-        titleView.setText(travel.destination.location.toString());
-
-        TextView durationView = findViewById(R.id.travel_duration);
-        durationView.setText(DateTimeFormatter.formatDurationView(travel.origin, travel.destination));
+        setTitle(travel.destination.location.toString());
 
         TextView startPointView = findViewById(R.id.travel_start_point);
         startPointView.setText(travel.origin.location.toString());
@@ -71,7 +70,6 @@ public class TravelInfoActivity extends AppCompatActivity
         TextView endTimeView = findViewById(R.id.travel_end_time);
         endTimeView.setText(DateTimeFormatter.formatDateTime(travel.destination.departure));
 
-        travel.accommodation = Mocker.mockObjects(1, ActivityType.ACCOMMODATION).get(0);
         TextView accommodationNameView = findViewById(R.id.accommodation_name);
         accommodationNameView.setText(travel.accommodation.name);
 
@@ -88,8 +86,16 @@ public class TravelInfoActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap map) {
-        List<Double> coordinates = Mocker.mockCoordinates();
+        List<Double> coordinates = Arrays.asList(
+                Mocker.dbTravel.accommodation.location.latitude,
+                Mocker.dbTravel.accommodation.location.longitude);
+
         LatLng destination = new LatLng(coordinates.get(0), coordinates.get(1));
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(destination);
+        map.addMarker(markerOptions);
+
         CameraPosition position = new CameraPosition(destination, 15, 0, 0);
         map.moveCamera(CameraUpdateFactory.newCameraPosition(position));
     }
@@ -106,7 +112,7 @@ public class TravelInfoActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_full_bar, menu);
         return true;
     }
 
@@ -115,6 +121,14 @@ public class TravelInfoActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        if (id == R.id.action_edit) {
+            return true;
+        }
+
+        if (id == R.id.action_delete) {
             return true;
         }
 
@@ -129,7 +143,8 @@ public class TravelInfoActivity extends AppCompatActivity
             Intent intent = new Intent(TravelInfoActivity.this, ProfileActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
-            //do logout
+            Intent intent = new Intent(TravelInfoActivity.this, LoginActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_travels) {
             Intent intent = new Intent(TravelInfoActivity.this, TravelsActivity.class);
             startActivity(intent);

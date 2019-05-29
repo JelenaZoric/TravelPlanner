@@ -53,7 +53,7 @@ public class Mocker {
 
     private static final String[] ITEMS = {"Passport", "Money", "Hair Dryer", "Umbrella", "Phone", "Toothbrush", "Slippers", "Keys"};
 
-    private static final String ROUTE_PATTERN = "Route %s";
+    private static final String ROUTE_PATTERN = "Route %d";
 
     private static final String[] COMMENTS = {
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
@@ -65,7 +65,28 @@ public class Mocker {
             "Duis in lorem id enim sodales venenatis eu vel risus."
     };
 
-    public static List<Travel> mockTravels(int itemsCount) {
+    public static User db;
+    public static Travel dbTravel;
+    public static Route dbRoute;
+    public static Activity dbActivity;
+
+    public static User mockUser() {
+        User user = new User();
+        user.email = EMAIL;
+
+        Random random = new Random();
+        int nameIdx = random.nextInt(2);
+
+        user.firstName = FIRST_NAME[nameIdx];
+        user.lastName = LAST_NAME;
+
+        user.location = mockLocation();
+
+        user.travels = mockTravels(1);
+        return user;
+    }
+
+    private static List<Travel> mockTravels(int itemsCount) {
         List<Travel> travels = new ArrayList<>();
         Random random = new Random();
 
@@ -95,13 +116,18 @@ public class Mocker {
             travel.mode = TransportationMode.values()[randomModeIdx];
             travel.currency = CURRENCYS[randomModeIdx % 4];
 
+            travel.items = mockItems(random.nextInt(10) + 1);
+            travel.routes = mockRoutes(random.nextInt(10) + 1);
+
+            travel.accommodation = mockObjects(1, ActivityType.ACCOMMODATION).get(0);
+
             travels.add(travel);
         }
 
         return travels;
     }
 
-    public static Location mockLocation() {
+    private static Location mockLocation() {
         Location location = new Location();
 
         Random random = new Random();
@@ -110,25 +136,11 @@ public class Mocker {
         location.city = CITIES[randomLocationIdx];
         location.country = COUNTRIES[randomLocationIdx];
 
+        List<Double> coordinates = mockCoordinates();
+        location.latitude = coordinates.get(0);
+        location.longitude = coordinates.get(1);
+
         return location;
-    }
-
-    public static User mockUser() {
-        User user = new User();
-        user.email = EMAIL;
-
-        Random random = new Random();
-        int nameIdx = random.nextInt(2);
-
-        user.firstName = FIRST_NAME[nameIdx];
-        user.lastName = LAST_NAME;
-
-        Location location = new Location();
-        location.city = ORIGIN_CITY;
-        location.country = ORIGIN_COUNTRY;
-        user.location = location;
-
-        return user;
     }
 
     public static List<Object> mockObjects(int itemsCount, ActivityType type) {
@@ -188,6 +200,7 @@ public class Mocker {
             object.rating = abs(random.nextDouble() * 5);
 
             object.description = mockText();
+            //object.comments = mockComments(random.nextInt(10) + 1);
 
             objects.add(object);
         }
@@ -204,16 +217,7 @@ public class Mocker {
         return Arrays.asList(latitude, longitude);
     }
 
-    public static List<Double> mockCoordinates(double centerLat, double centerLong) {
-        Random random = new Random();
-
-        double latitude = (random.nextDouble() * 360 - 180) * 0.00001 + centerLat;
-        double longitude = (random.nextDouble() * 180 - 90) * 0.00001 - centerLong;
-
-        return Arrays.asList(latitude, longitude);
-    }
-
-    public static List<Item> mockItems(int itemsCount) {
+    private static List<Item> mockItems(int itemsCount) {
         List<Item> items = new ArrayList<>();
         Random random = new Random();
 
@@ -230,7 +234,7 @@ public class Mocker {
         return items;
     }
 
-    public static List<Route> mockRoutes(int itemsCount) {
+    private static List<Route> mockRoutes(int itemsCount) {
         List<Route> routes = new ArrayList<>();
         Random random = new Random();
 
@@ -238,10 +242,12 @@ public class Mocker {
             Route route = new Route();
 
             int randomIdx = random.nextInt(ITEMS.length);
-            route.name = String.format(ROUTE_PATTERN, ITEMS[randomIdx]);
+            route.name = String.format(Locale.getDefault(), ROUTE_PATTERN, randomIdx);
 
             long randomDaysBefore = random.nextInt(DAYS_BOUND);
             route.date = LocalDate.now().minusDays(randomDaysBefore);
+
+            route.activities = mockActivities(random.nextInt(10) + 1);
 
             routes.add(route);
         }
@@ -249,7 +255,7 @@ public class Mocker {
         return routes;
     }
 
-    public static List<Activity> mockActivities(int itemsCount) {
+    private static List<Activity> mockActivities(int itemsCount) {
         List<Activity> activities = new ArrayList<>();
         Random random = new Random();
 
@@ -267,7 +273,7 @@ public class Mocker {
         return activities;
     }
 
-    public static List<Comment> mockComments(int itemsCount) {
+    private static List<Comment> mockComments(int itemsCount) {
         List<Comment> comments = new ArrayList<>();
         Random random = new Random();
 
