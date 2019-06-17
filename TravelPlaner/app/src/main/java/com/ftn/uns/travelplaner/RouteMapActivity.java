@@ -1,6 +1,7 @@
 package com.ftn.uns.travelplaner;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,13 +24,29 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
 
-import java.util.Arrays;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class RouteMapActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+
+    private DirectionsTask directionsTask = null;
+    private GoogleMap map;
+    private List<LatLng> activities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,25 +81,42 @@ public class RouteMapActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap map) {
-        List<Double> centerCoordinates = Arrays.asList(
-                Mocker.dbTravel.accommodation.location.latitude,
-                Mocker.dbTravel.accommodation.location.longitude);
+        this.map = map;
+        this.activities = new ArrayList<>();
 
-        for (Activity activity: Mocker.dbRoute.activities) {
+        LatLng accommodation = new LatLng(Mocker.dbTravel.accommodation.location.latitude, Mocker.dbTravel.accommodation.location.longitude);
+        this.activities.add(accommodation);
 
-            List<Double> coordinates = Arrays.asList(
-                    activity.object.location.latitude,
-                    activity.object.location.longitude);
-
-            LatLng destination = new LatLng(coordinates.get(0), coordinates.get(1));
-
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(destination);
-            map.addMarker(markerOptions);
+        for (Activity activity : Mocker.dbRoute.activities) {
+            this.activities.add(new LatLng(activity.object.location.latitude, activity.object.location.longitude));
         }
 
-        CameraPosition cameraPosition = new CameraPosition(new LatLng(centerCoordinates.get(0), centerCoordinates.get(1)), 10, 0, 0);
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        String url = getMapsApiDirectionsUrl(this.activities);
+        if (this.directionsTask == null) {
+            this.directionsTask = new DirectionsTask(url);
+            this.directionsTask.execute("");
+        }
+    }
+
+
+    private String getMapsApiDirectionsUrl(List<LatLng> activities) {
+
+        LatLng origin = activities.get(0);
+        String url = "https://maps.googleapis.com/maps/api/directions/json?origin="
+                + origin.latitude + "," + origin.longitude + "&waypoints=optimize:true|";
+
+        for (int i = 1; i < activities.size() - 2; i++) {
+            LatLng activity = activities.get(i);
+
+            url += activity.latitude + "," + activity.longitude + "&";
+        }
+
+        LatLng lastWaypoint = activities.get(activities.size() - 2);
+        url += lastWaypoint.latitude + "," + lastWaypoint.longitude;
+
+        LatLng destination = activities.get(activities.size() - 1);
+        return url + "|&destination=" + destination.latitude + "," + destination.longitude
+                + "&sensor=false&key=AIzaSyB_I8oy65QQaD9c8gGkqPYBaG-QfkjzLl4";
     }
 
     @Override
@@ -113,7 +147,7 @@ public class RouteMapActivity extends AppCompatActivity
             return true;
         }
 
-        if(id == R.id.action_delete) {
+        if (id == R.id.action_delete) {
             return true;
         }
 
@@ -151,5 +185,83 @@ public class RouteMapActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    public class DirectionsTask extends AsyncTask<String, String, List<LatLng>> {
+
+        public String url = "";
+
+        public DirectionsTask(String url) {
+            this.url = url;
+        }
+
+        @Override
+        protected List<LatLng> doInBackground(String... uri) {
+            if (url == null) {
+                return null;
+            }
+
+            try {
+                URL url = new URL(this.url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                if (conn.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+                    return readResponse(conn.getInputStream());
+                }
+            } catch (IOException | JSONException e) {
+                //TODO Handle problems..
+            }
+            return null;
+        }
+
+        private List<LatLng> readResponse(InputStream stream) throws IOException, JSONException {
+            BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+            StringBuilder total = new StringBuilder();
+            for (String line; (line = r.readLine()) != null; ) {
+                total.append(line).append('\n');
+            }
+
+            return parseResponse(total.toString());
+        }
+
+        private List<LatLng> parseResponse(String response) throws JSONException {
+            JSONObject responseObject = new JSONObject(response);
+            JSONArray routesArray = responseObject.getJSONArray("routes");
+            List<LatLng> waypoints = new ArrayList<>();
+
+            for(int k = 0; k < routesArray.length(); k++) {
+                JSONObject routeObject = routesArray.getJSONObject(k);
+                JSONArray legsArray = routeObject.getJSONArray("legs");
+
+                for (int i = 0; i < legsArray.length(); i++) {
+                    JSONObject legObject = legsArray.getJSONObject(i);
+                    JSONArray stepsArray = legObject.getJSONArray("steps");
+
+                    for (int j = 0; j < stepsArray.length() - 1; j++) {
+                        JSONObject stepObject = stepsArray.getJSONObject(j);
+                        JSONObject startLocation = stepObject.getJSONObject("start_location");
+
+                        double latitude = startLocation.getDouble("lat");
+                        double longitude = startLocation.getDouble("lng");
+                        waypoints.add(new LatLng(latitude, longitude));
+                    }
+                }
+            }
+
+            return waypoints;
+        }
+
+        @Override
+        protected void onPostExecute(List<LatLng> result) {
+
+            map.addPolygon(new PolygonOptions().addAll(result));
+
+            for (LatLng activity : activities) {
+                map.addMarker(new MarkerOptions().position(activity));
+            }
+
+            //draw lines and markers
+            CameraPosition cameraPosition = new CameraPosition(result.get(0), 15, 0, 0);
+            map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
     }
 }
