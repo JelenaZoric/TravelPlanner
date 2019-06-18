@@ -189,7 +189,7 @@ public class NewTravelActivity extends AppCompatActivity {
         location.city = content[0];
         location.country = content[1];
 
-        List<Double> coords = Mocker.mockCoordinates();
+        List<Double> coords = Mocker.mockCoordinates(-1);
         location.latitude = coords.get(0);
         location.longitude = coords.get(1);
 

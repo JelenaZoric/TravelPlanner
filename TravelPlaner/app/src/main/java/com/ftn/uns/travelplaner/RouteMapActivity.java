@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,20 +104,20 @@ public class RouteMapActivity extends AppCompatActivity
 
         LatLng origin = activities.get(0);
         String url = "https://maps.googleapis.com/maps/api/directions/json?origin="
-                + origin.latitude + "," + origin.longitude + "&waypoints=optimize:true|";
+                + origin.latitude + "," + origin.longitude + "&waypoints=";
 
         for (int i = 1; i < activities.size() - 2; i++) {
             LatLng activity = activities.get(i);
 
-            url += activity.latitude + "," + activity.longitude + "&";
+            url += activity.latitude + "," + activity.longitude + "|";
         }
 
         LatLng lastWaypoint = activities.get(activities.size() - 2);
         url += lastWaypoint.latitude + "," + lastWaypoint.longitude;
 
         LatLng destination = activities.get(activities.size() - 1);
-        return url + "|&destination=" + destination.latitude + "," + destination.longitude
-                + "&sensor=false&key=AIzaSyB_I8oy65QQaD9c8gGkqPYBaG-QfkjzLl4";
+        return url + "&destination=" + destination.latitude + "," + destination.longitude
+                + "&key=AIzaSyB_I8oy65QQaD9c8gGkqPYBaG-QfkjzLl4";
     }
 
     @Override
@@ -236,7 +237,7 @@ public class RouteMapActivity extends AppCompatActivity
                     JSONObject legObject = legsArray.getJSONObject(i);
                     JSONArray stepsArray = legObject.getJSONArray("steps");
 
-                    for (int j = 0; j < stepsArray.length() - 1; j++) {
+                    for (int j = 0; j < stepsArray.length(); j++) {
                         JSONObject stepObject = stepsArray.getJSONObject(j);
                         JSONObject startLocation = stepObject.getJSONObject("start_location");
 
@@ -253,7 +254,9 @@ public class RouteMapActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(List<LatLng> result) {
 
-            map.addPolygon(new PolygonOptions().addAll(result));
+            for(int i = 0; i < result.size() - 1; i++) {
+                map.addPolyline(new PolylineOptions().add(result.get(i), result.get(i+1)));
+            }
 
             for (LatLng activity : activities) {
                 map.addMarker(new MarkerOptions().position(activity));

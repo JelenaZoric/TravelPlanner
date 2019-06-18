@@ -49,7 +49,7 @@ public class Mocker {
 
     private static final Double[][] COORDINATES = {
             {48.864997072, 2.322526932}, {48.864906733, 2.310407638},
-            {48.860954197, 2.314905165}, {48.853228910, 2.317651747}};
+            {48.857785, 2.300292}, {48.853228910, 2.317651747}};
 
     private static final String ADDRESS_PATTERN = "Main street %d";
     private static final String EMAIL_PATTERN = "%s@%s.com";
@@ -84,7 +84,7 @@ public class Mocker {
         user.firstName = FIRST_NAME[nameIdx];
         user.lastName = LAST_NAME;
 
-        user.location = mockLocation();
+        user.location = mockLocation(-1);
 
         user.travels = mockTravels(1);
         return user;
@@ -109,7 +109,7 @@ public class Mocker {
             travel.origin = originTransportation;
 
             Transportation destinationTransportation = new Transportation();
-            destinationTransportation.location = mockLocation();
+            destinationTransportation.location = mockLocation(-1);
 
             long randomDurationRange = random.nextInt(DURATION_RANGE_BOUND);
             destinationTransportation.departure = originTransportation.departure.plusDays(randomDurationRange);
@@ -123,7 +123,7 @@ public class Mocker {
             travel.items = mockItems(random.nextInt(10) + 1);
             travel.routes = mockRoutes(random.nextInt(10) + 1);
 
-            travel.accommodation = mockObjects(1, ActivityType.ACCOMMODATION).get(0);
+            travel.accommodation = mockObjects(1, ActivityType.ACCOMMODATION, -1).get(0);
 
             travels.add(travel);
         }
@@ -131,7 +131,7 @@ public class Mocker {
         return travels;
     }
 
-    private static Location mockLocation() {
+    private static Location mockLocation(int idx) {
         Location location = new Location();
 
         Random random = new Random();
@@ -140,14 +140,14 @@ public class Mocker {
         location.city = CITIES[randomLocationIdx];
         location.country = COUNTRIES[randomLocationIdx];
 
-        List<Double> coordinates = mockCoordinates();
+        List<Double> coordinates = mockCoordinates(idx);
         location.latitude = coordinates.get(0);
         location.longitude = coordinates.get(1);
 
         return location;
     }
 
-    public static List<Object> mockObjects(int itemsCount, ActivityType type) {
+    public static List<Object> mockObjects(int itemsCount, ActivityType type, int idx) {
         List<Object> objects = new ArrayList<>();
         Random random = new Random();
 
@@ -200,7 +200,7 @@ public class Mocker {
                     randomAddressNumber,
                     random.nextInt(10));
 
-            object.location = mockLocation();
+            object.location = mockLocation(idx);
             object.rating = abs(random.nextDouble() * 5);
 
             object.description = mockText();
@@ -212,12 +212,12 @@ public class Mocker {
         return objects;
     }
 
-    public static List<Double> mockCoordinates() {
-        Random random = new Random();
+    public static List<Double> mockCoordinates(int idx) {
+        if (idx == -1) {
+            return Arrays.asList(COORDINATES[0]);
+        }
 
-        Double[] coords = COORDINATES[random.nextInt(COORDINATES.length)];
-
-        return Arrays.asList(coords);
+        return Arrays.asList(COORDINATES[idx + 1]);
     }
 
     private static List<Item> mockItems(int itemsCount) {
@@ -250,7 +250,7 @@ public class Mocker {
             long randomDaysBefore = random.nextInt(DAYS_BOUND);
             route.date = LocalDate.now().minusDays(randomDaysBefore);
 
-            route.activities = mockActivities(random.nextInt(10) + 1);
+            route.activities = mockActivities(3);
 
             routes.add(route);
         }
@@ -267,7 +267,7 @@ public class Mocker {
 
             ActivityType type = ActivityType.values()[random.nextInt(ActivityType.values().length)];
             activity.type = type;
-            activity.object = mockObjects(1, type).get(0);
+            activity.object = mockObjects(1, type, i).get(0);
             activity.time = LocalTime.of(random.nextInt(24), random.nextInt(60), random.nextInt(60), 0);
 
             activities.add(activity);

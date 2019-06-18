@@ -57,7 +57,7 @@ public class NewActivityActivity extends AppCompatActivity {
                 ListView objectsView = findViewById(R.id.objects);
 
                 Random random = new Random();
-                mockerObjects = Mocker.mockObjects(random.nextInt(2) + 1, ActivityType.valueOf(selectedItem.toUpperCase()));
+                mockerObjects = Mocker.mockObjects(random.nextInt(2) + 1, ActivityType.valueOf(selectedItem.toUpperCase()), -1);
 
                 objectsView.setAdapter(new ObjectsAdapter(NewActivityActivity.this, mockerObjects));
 
