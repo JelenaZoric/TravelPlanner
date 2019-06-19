@@ -49,6 +49,10 @@ public class Mocker {
     private static final String[] MUSEUM_NAMES = {"The Louvre", "National Museum"};
     private static final String[] SHOPPING_NAMES = {"Main Plaza", "Flee Market"};
 
+    private static final Double[][] COORDINATES = {
+            {48.864997072, 2.322526932}, {48.864906733, 2.310407638},
+            {48.860954197, 2.314905165}, {48.853228910, 2.317651747}};
+
     private static final String ADDRESS_PATTERN = "Main street %d";
     private static final String EMAIL_PATTERN = "%s@%s.com";
     private static final String PHONE_PATTERN = "+33 1%d 5%d7 %d9%d";
@@ -217,10 +221,9 @@ public class Mocker {
     public static List<Double> mockCoordinates() {
         Random random = new Random();
 
-        double latitude = random.nextDouble() * 360 - 180;
-        double longitude = random.nextDouble() * 180 - 90;
+        Double[] coords = COORDINATES[random.nextInt(COORDINATES.length)];
 
-        return Arrays.asList(latitude, longitude);
+        return Arrays.asList(coords);
     }
 
     private static List<Item> mockItems(int itemsCount) {
