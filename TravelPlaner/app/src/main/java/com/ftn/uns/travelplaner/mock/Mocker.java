@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -100,7 +102,8 @@ public class Mocker {
             originTransportation.location = originLocation;
 
             long randomDaysBefore = random.nextInt(DAYS_BOUND);
-            originTransportation.departure = LocalDateTime.now().minusDays(randomDaysBefore);
+            //originTransportation.departure = LocalDateTime.now().minusDays(randomDaysBefore);
+            originTransportation.departure = new Date();
 
             travel.origin = originTransportation;
 
@@ -108,7 +111,10 @@ public class Mocker {
             destinationTransportation.location = mockLocation();
 
             long randomDurationRange = random.nextInt(DURATION_RANGE_BOUND);
-            destinationTransportation.departure = originTransportation.departure.plusDays(randomDurationRange);
+            //destinationTransportation.departure = originTransportation.departure.plusDays(randomDurationRange);
+            //destinationTransportation.departure.add(Calendar.DAY_OF_MONTH, +5);
+            destinationTransportation.departure = new Date();
+            destinationTransportation.departure.setDate(Calendar.getInstance().getTime().getDate()+5);
 
             travel.destination = destinationTransportation;
 
@@ -245,7 +251,8 @@ public class Mocker {
             route.name = String.format(Locale.getDefault(), ROUTE_PATTERN, randomIdx);
 
             long randomDaysBefore = random.nextInt(DAYS_BOUND);
-            route.date = LocalDate.now().minusDays(randomDaysBefore);
+            //route.date = LocalDate.now().minusDays(randomDaysBefore);
+            route.date = new Date();
 
             route.activities = mockActivities(random.nextInt(10) + 1);
 
@@ -265,7 +272,8 @@ public class Mocker {
             ActivityType type = ActivityType.values()[random.nextInt(ActivityType.values().length)];
             activity.type = type;
             activity.object = mockObjects(1, type).get(0);
-            activity.time = LocalTime.of(random.nextInt(24), random.nextInt(60), random.nextInt(60), 0);
+            //activity.time = LocalTime.of(random.nextInt(24), random.nextInt(60), random.nextInt(60), 0);
+            activity.time = Calendar.getInstance().getTime();
 
             activities.add(activity);
         }

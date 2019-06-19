@@ -6,9 +6,18 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <include
-        layout="@layout/app_bar_new_travel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbars="vertical"
+        android:verticalScrollbarPosition="right">
+
+        <include
+            layout="@layout/app_bar_new_travel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
 
 </android.support.v4.widget.DrawerLayout>

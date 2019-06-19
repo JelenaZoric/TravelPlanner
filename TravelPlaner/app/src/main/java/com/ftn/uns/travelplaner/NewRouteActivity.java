@@ -13,6 +13,7 @@ import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Route;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class NewRouteActivity extends AppCompatActivity {
 
@@ -65,7 +66,8 @@ public class NewRouteActivity extends AppCompatActivity {
 
     private boolean save() {
         route.name = nameView.getText().toString();
-        route.date = LocalDate.of(dateView.getYear(), dateView.getMonth() + 1, dateView.getDayOfMonth());
+        //route.date = LocalDate.of(dateView.getYear(), dateView.getMonth() + 1, dateView.getDayOfMonth());
+        route.date = new Date(dateView.getYear(), dateView.getMonth(), dateView.getDayOfMonth());
 
         Mocker.dbTravel.routes.add(route);
         return true;

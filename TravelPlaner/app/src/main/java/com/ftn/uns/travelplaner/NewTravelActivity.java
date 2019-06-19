@@ -20,11 +20,13 @@ import com.ftn.uns.travelplaner.model.Object;
 import com.ftn.uns.travelplaner.model.Transportation;
 import com.ftn.uns.travelplaner.model.TransportationMode;
 import com.ftn.uns.travelplaner.model.Travel;
+import com.ftn.uns.travelplaner.util.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class NewTravelActivity extends AppCompatActivity {
@@ -196,12 +198,29 @@ public class NewTravelActivity extends AppCompatActivity {
         return location;
     }
 
-    private LocalDateTime createTimestamp(Spinner dateView, Spinner timeView) {
+    private Date createTimestamp(Spinner dateView, Spinner timeView) {
         String contentDate = dateView.getSelectedItem().toString();
         String contentTime = timeView.getSelectedItem().toString();
+        String[] dates = contentDate.split("/");
+        String[] times = contentTime.split(":");
 
+        int year = Integer.parseInt(dates[2]);
+        int month = Integer.parseInt(dates[1]);
+        int day = Integer.parseInt(dates[0]);
+        int hour = Integer.parseInt(times[0]);
+        int minute = Integer.parseInt(times[1]);
+        Calendar c = Calendar.getInstance();
+        c.set(year, month-1, day, hour, minute);
+
+        Date date = c.getTime();
+        String formattedDate = DateTimeFormatter.formatDate(date);
+        String formattedTime = DateTimeFormatter.formatTime(date);
+
+        return date;
+        /*
         return LocalDateTime.of(
                 LocalDate.parse(contentDate, DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 LocalTime.parse(contentTime, DateTimeFormatter.ofPattern("HH:mm")));
+        */
     }
 }
