@@ -23,6 +23,7 @@ import com.ftn.uns.travelplaner.model.Object;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -152,10 +153,11 @@ public class NewActivityActivity extends AppCompatActivity {
 
     private boolean save() {
         //activity.time = LocalTime.parse(timeView.getSelectedItem().toString(), DateTimeFormatter.ofPattern("HH:mm"));
-        Date time = new Date();
         String[] times = timeView.getSelectedItem().toString().split(":");
-        time.setHours(Integer.parseInt(times[0]));
-        time.setMinutes(Integer.parseInt(times[1]));
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, Integer.parseInt(times[0]));
+        c.set(Calendar.MINUTE, Integer.parseInt(times[1]));
+        Date time = c.getTime();
         activity.time = time;
         activity.type = ActivityType.valueOf(typeView.getSelectedItem().toString().toUpperCase());
 

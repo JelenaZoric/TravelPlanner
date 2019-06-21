@@ -8,11 +8,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ftn.uns.travelplaner.adapters.TravelItemsAdapter;
@@ -30,7 +32,7 @@ public class TravelItemsActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        EditText newItemView = findViewById(R.id.new_travel_item);
+        final EditText newItemView = findViewById(R.id.new_travel_item);
         newItemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
@@ -42,6 +44,16 @@ public class TravelItemsActivity extends AppCompatActivity
                     Toast.makeText(getApplicationContext(), String.format("New item: '%s'", item.name), Toast.LENGTH_SHORT);
                     ((EditText) v).setText("");
                 }
+            }
+        });
+
+        newItemView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                Item item = new Item();
+                item.name = newItemView.getText().toString();
+                Mocker.dbTravel.items.add(item);
+                return true;
             }
         });
 
