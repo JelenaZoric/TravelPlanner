@@ -13,6 +13,7 @@ import com.ftn.uns.travelplaner.util.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
@@ -33,7 +34,12 @@ public class DatePickerFragment extends DialogFragment
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item);
-        adapter.add(DateTimeFormatter.formatDate(LocalDate.of(year, month + 1, day)));
+        //adapter.add(DateTimeFormatter.formatDate(LocalDate.of(year, month + 1, day)));
+        final Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, day);
+        adapter.add(DateTimeFormatter.formatDate(c.getTime()));
         this.view.setAdapter(adapter);
     }
 }
