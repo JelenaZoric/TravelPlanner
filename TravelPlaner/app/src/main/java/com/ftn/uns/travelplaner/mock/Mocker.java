@@ -274,7 +274,7 @@ public class Mocker {
 
             ActivityType type = ActivityType.values()[random.nextInt(ActivityType.values().length)];
             activity.type = type;
-            activity.object = mockObjects(1, type).get(0);
+            activity.object = mockObjects(1, type,i).get(0);
             //activity.time = LocalTime.of(random.nextInt(24), random.nextInt(60), random.nextInt(60), 0);
             activity.time = Calendar.getInstance().getTime();
 
