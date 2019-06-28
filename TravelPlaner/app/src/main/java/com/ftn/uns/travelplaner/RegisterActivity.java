@@ -13,9 +13,32 @@ import android.widget.TextView;
 
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Location;
+import com.ftn.uns.travelplaner.model.Travel;
 import com.ftn.uns.travelplaner.model.User;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class RegisterActivity extends AppCompatActivity {
+
+    private OkHttpClient client = new OkHttpClient();
+
+    // JSON <--> Java converter
+    private Moshi moshi = new Moshi.Builder()
+            .add(Date.class, new Rfc3339DateJsonAdapter())
+            .build();
 
     private RegisterActivity.UserRegisterTask mAuthTask = null;
 
@@ -24,6 +47,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mFirstNameView;
     private EditText mLastNameView;
     private AutoCompleteTextView mLocationView;
+
+    private TextView testTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +60,8 @@ public class RegisterActivity extends AppCompatActivity {
         mFirstNameView = findViewById(R.id.first_name);
         mLastNameView = findViewById(R.id.last_name);
         mLocationView = findViewById(R.id.location);
+
+        testTextView = findViewById(R.id.testTextView);
 
         TextView loginView = findViewById(R.id.login);
         loginView.setOnClickListener(new View.OnClickListener() {
@@ -50,6 +77,62 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 attemptRegister();
+            }
+        });
+
+        run(); // Radi fetching sa bekenda
+
+        Button testButton = findViewById(R.id.testButton);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("\nTestButton Click!");
+                run();
+            }
+        });
+    }
+
+    void run() {
+        final String url = getString(R.string.BASE_URL) + "travels";
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        testTextView.setText(R.string.network_failure);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String myResponse = response.body().string();
+
+                    Type type = Types.newParameterizedType(List.class, Travel.class);
+                    JsonAdapter<List<Travel>> adapter = moshi.adapter(type);
+                    List<Travel> travels = adapter.fromJson(myResponse);
+
+                    for (Travel travel : travels) {  // Testiranja radi.
+                        System.out.println("\nTravel:");
+                        System.out.println(travel.currency);
+                        System.out.println(travel.destination.departure);
+                        System.out.println(travel.accommodation.email);
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            testTextView.append(myResponse);
+                        }
+                    });
+                }
             }
         });
     }

@@ -4,11 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,10 +18,13 @@ public class Travel implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	@Column(length = 1000) // potrebno zbog ogranicenja od 255 karaktera
 	private Transportation origin;
+	@Column(length = 1000)
 	private Transportation destination;
 	private String currency;
 	private TransportationMode mode;
+	@Column(length = 1000)
 	private Object accommodation;
 	@JsonIgnore
 	@OneToMany
