@@ -141,7 +141,8 @@ public class RouteMapActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(RouteMapActivity.this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         if (id == R.id.action_edit) {
