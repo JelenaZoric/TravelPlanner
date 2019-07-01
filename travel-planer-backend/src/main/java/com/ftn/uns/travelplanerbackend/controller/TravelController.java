@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.uns.travelplanerbackend.model.Travel;
+import com.ftn.uns.travelplanerbackend.service.LocationService;
+import com.ftn.uns.travelplanerbackend.service.ObjectService;
+import com.ftn.uns.travelplanerbackend.service.TransportationService;
 import com.ftn.uns.travelplanerbackend.service.TravelService;
 
 @RestController
@@ -20,6 +23,12 @@ public class TravelController {
 
 	@Autowired
 	private TravelService travelService;
+	@Autowired
+	private LocationService locationService;
+	@Autowired
+	private TransportationService transportationService;
+	@Autowired
+	private ObjectService objectService;
 	
 	@RequestMapping
 	public ResponseEntity<List<Travel>> getAllTravels() {
@@ -35,6 +44,12 @@ public class TravelController {
 	
 	@RequestMapping(method=RequestMethod.POST, consumes="application/json")
 	public ResponseEntity<Travel> addTravel(@RequestBody Travel travel) {
+		/*	Location startingLoc = locationService.save(travel.getOrigin().getLocation());
+		Location destinationLoc = locationService.save(travel.getDestination().getLocation());
+		Transportation transportationOrigin = transportationService.save(travel.getOrigin());
+		Transportation transportationDestination = transportationService.save(travel.getDestination());
+		Location accommodationLoc = locationService.save(travel.getAccommodation().getLocation());
+		com.ftn.uns.travelplanerbackend.model.Object object = objectService.save(travel.getAccommodation());   */
 		Travel newTravel = travelService.save(travel);
 		return new ResponseEntity<Travel>(newTravel, HttpStatus.CREATED);
 	}

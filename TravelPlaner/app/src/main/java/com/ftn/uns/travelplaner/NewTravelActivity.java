@@ -21,13 +21,27 @@ import com.ftn.uns.travelplaner.model.Transportation;
 import com.ftn.uns.travelplaner.model.TransportationMode;
 import com.ftn.uns.travelplaner.model.Travel;
 import com.ftn.uns.travelplaner.util.DateTimeFormatter;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class NewTravelActivity extends AppCompatActivity {
 
@@ -44,7 +58,13 @@ public class NewTravelActivity extends AppCompatActivity {
     EditText addressView;
     EditText emailView;
     EditText phoneView;
+    OkHttpClient client = new OkHttpClient();
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
 
+    private Moshi moshi = new Moshi.Builder()
+            .add(Date.class, new Rfc3339DateJsonAdapter())
+            .build();
     Travel travel;
 
     @Override
@@ -181,6 +201,7 @@ public class NewTravelActivity extends AppCompatActivity {
         travel.accommodation.phoneNumber = phoneView.getText().toString();
 
         Mocker.db.travels.add(travel);
+        postTravel(travel);
         return true;
     }
 
@@ -222,5 +243,63 @@ public class NewTravelActivity extends AppCompatActivity {
                 LocalDate.parse(contentDate, DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 LocalTime.parse(contentTime, DateTimeFormatter.ofPattern("HH:mm")));
         */
+    }
+
+    void doPostRequest(String url, String json) throws IOException {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+          /*      runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        testTextView.setText(R.string.network_failure);
+                    }
+                }); */
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String myResponse = response.body().string();
+
+                    Type type = Types.newParameterizedType(Travel.class);
+                    JsonAdapter<Travel> adapter = moshi.adapter(type);
+                    Travel travel = adapter.fromJson(myResponse);
+
+                    // Testiranja radi.
+                    System.out.println("\nTravel:");
+                    // System.out.println(travel.currency);
+                    System.out.println(travel.destination.departure);
+                    System.out.println(travel.accommodation.email);
+
+
+                 /*   runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            testTextView.append(myResponse);
+                        }
+                    });   */
+                }
+            }
+        });
+    }
+
+    void postTravel(Travel travel){
+
+        JsonAdapter<Travel> jsonAdapter = moshi.adapter(Travel.class);
+
+        String json = jsonAdapter.toJson(travel);
+        final String url = getString(R.string.BASE_URL) + "travels";
+        try {
+            doPostRequest(url, json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
