@@ -3,6 +3,7 @@ package com.ftn.uns.travelplanerbackend.controller;
 import com.ftn.uns.travelplanerbackend.model.User;
 import com.ftn.uns.travelplanerbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class AuthenticationController {
 
         String response = userService.login(user);
         if (response == null) {
-            return ResponseEntity.unprocessableEntity().build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         return ResponseEntity.ok(response);
