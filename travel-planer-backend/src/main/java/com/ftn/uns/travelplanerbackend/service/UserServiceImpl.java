@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplanerbackend.service;
 
+import com.ftn.uns.travelplanerbackend.configuration.jwt.JWTokenProvider;
 import com.ftn.uns.travelplanerbackend.model.User;
 import com.ftn.uns.travelplanerbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,9 @@ import java.util.Optional;
 @Transactional
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private JWTokenProvider tokenProvider;
 
     @Autowired
     private UserRepository userRepository;
@@ -56,7 +60,8 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
-        return credentialsValid(user, dbUser.get()) ? "OK" : "BAD CREDENTIALS";
+        String userID = dbUser.get().getId().toString();
+        return credentialsValid(user, dbUser.get()) ? tokenProvider.createToken(userID) : null;
     }
 
     @Override
