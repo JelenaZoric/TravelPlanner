@@ -2,7 +2,6 @@ package com.ftn.uns.travelplaner;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -17,12 +16,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.auth0.android.jwt.JWT;
 import com.ftn.uns.travelplaner.adapters.TravelsAdapter;
 import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Travel;
-import com.ftn.uns.travelplaner.model.User;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -33,14 +30,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class TravelsActivity extends AppCompatActivity
@@ -182,7 +176,6 @@ public class TravelsActivity extends AppCompatActivity
                 progressDialog.dismiss();
 
                 final String myResponse = response.body().string();
-                System.out.println("\n 186: myResponse");
                 System.out.println(myResponse);
 
                 if (response.isSuccessful()) {
