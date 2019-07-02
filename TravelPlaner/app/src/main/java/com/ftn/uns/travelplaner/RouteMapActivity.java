@@ -1,8 +1,10 @@
 package com.ftn.uns.travelplaner;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Activity;
 import com.ftn.uns.travelplaner.model.Route;
+import com.ftn.uns.travelplaner.util.ColorResolverUtil;
 import com.ftn.uns.travelplaner.util.DateTimeFormatter;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,7 +27,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
@@ -255,12 +257,18 @@ public class RouteMapActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(List<LatLng> result) {
 
-            for(int i = 0; i < result.size() - 1; i++) {
-                map.addPolyline(new PolylineOptions().add(result.get(i), result.get(i+1)));
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteMapActivity.this);
+            String routeColour = preferences.getString("routeColour", "Red");
+
+            for (int i = 0; i < result.size() - 1; i++) {
+                map.addPolyline(new PolylineOptions()
+                        .add(result.get(i), result.get(i + 1))
+                        .color(ColorResolverUtil.resolveColour(routeColour)));
             }
 
             for (LatLng activity : activities) {
-                map.addMarker(new MarkerOptions().position(activity));
+                map.addMarker(new MarkerOptions()
+                        .position(activity));
             }
 
             //draw lines and markers
