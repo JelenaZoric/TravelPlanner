@@ -66,7 +66,7 @@
     <!-- network communication -->
     <string name="BASE_URL">http://10.0.2.2:8080/</string>
     <string name="network_failure">Failure in network communication.</string>
-<<<<<<< HEAD
+
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -140,7 +140,6 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
-=======
+
     <string name="PREFS_NAME">AUTH_PREFS</string>
->>>>>>> 2fa952b53179e5d52b2ed3073e9c3acf35c17349
 </resources>
