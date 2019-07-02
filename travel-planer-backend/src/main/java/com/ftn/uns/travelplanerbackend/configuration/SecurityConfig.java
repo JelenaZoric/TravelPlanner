@@ -15,6 +15,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.headers().frameOptions().sameOrigin(); // potrebno da bi se mogla pokrenuti h2 konozola u browser-u
         httpSecurity
                 .httpBasic()
                 .and()

@@ -25,7 +25,7 @@ public class User implements Serializable {
 	private String password;
 	private String firstName;
 	private String lastName;
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Location location;
 	@JsonIgnore
 	@OneToMany
