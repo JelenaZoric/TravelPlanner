@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -53,12 +54,20 @@ public class TravelsActivity extends AppCompatActivity
             .add(Date.class, new Rfc3339DateJsonAdapter())
             .build();
 
+    ProgressDialog progressDialog;
+
+    ListView travelsView;
+
+    private List<Travel> travels = new ArrayList<Travel>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travels);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        travelsView = findViewById(R.id.travels_list);
 
         FloatingActionButton fab = findViewById(R.id.new_travel);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,19 +91,12 @@ public class TravelsActivity extends AppCompatActivity
     }
 
     private void setState() {
-        ListView travelsView = findViewById(R.id.travels_list);
-        List<Travel> travels = getTravels();
-        travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, travels));
-
-        setOnClickListener(travelsView);
-    }
-
-    private void setOnClickListener(ListView listView) {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        getTravels();
+        travelsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Mocker.dbTravel = Mocker.db.travels.get(position);
+//                Mocker.dbTravel = Mocker.db.travels.get(position);
                 Intent intent = new Intent(TravelsActivity.this, TravelInfoActivity.class);
                 startActivity(intent);
             }
@@ -147,13 +149,20 @@ public class TravelsActivity extends AppCompatActivity
         return true;
     }
 
-    private List<Travel> getTravels(){
+    private void getTravels(){
 
         final String url = getString(R.string.BASE_URL) + "travels";
 
         Request request = new Request.Builder()
                 .url(url)
                 .build();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setTitle("Loading travels");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -163,19 +172,29 @@ public class TravelsActivity extends AppCompatActivity
                     @Override
                     public void run() {
                         System.out.println("\nErrororororor\n");
+                        progressDialog.dismiss();
                     }
                 });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                progressDialog.dismiss();
+
                 final String myResponse = response.body().string();
+                System.out.println("\n 186: myResponse");
                 System.out.println(myResponse);
 
                 if (response.isSuccessful()) {
                     Type type = Types.newParameterizedType(List.class, Travel.class);
                     JsonAdapter<List<Travel>> adapter = moshi.adapter(type);
-                    List<Travel> travels = adapter.fromJson(myResponse);
+                    travels = adapter.fromJson(myResponse);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, travels));
+                        }
+                    });
                 }
                 else {
                     runOnUiThread(new Runnable() {
@@ -187,7 +206,5 @@ public class TravelsActivity extends AppCompatActivity
                 }
             }
         });
-
-        return new ArrayList<Travel>();
     }
 }
