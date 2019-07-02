@@ -134,7 +134,7 @@ public class RouteMapActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_full_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_bar, menu);
         return true;
     }
 
