@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.ActivityType;
 import com.ftn.uns.travelplaner.model.Location;
@@ -58,7 +59,10 @@ public class NewTravelActivity extends AppCompatActivity {
     EditText addressView;
     EditText emailView;
     EditText phoneView;
-    OkHttpClient client = new OkHttpClient();
+    OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(new AuthInterceptor(this))
+            .build();
+
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
@@ -200,7 +204,7 @@ public class NewTravelActivity extends AppCompatActivity {
         travel.accommodation.address = addressView.getText().toString();
         travel.accommodation.phoneNumber = phoneView.getText().toString();
 
-        Mocker.db.travels.add(travel);
+//        Mocker.db.travels.add(travel);
         postTravel(travel);
         return true;
     }
@@ -246,6 +250,7 @@ public class NewTravelActivity extends AppCompatActivity {
     }
 
     void doPostRequest(String url, String json) throws IOException {
+        System.out.println("\nDoing doPostRequest");
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
@@ -254,6 +259,7 @@ public class NewTravelActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                System.out.println("\nDoing Failure");
                 e.printStackTrace();
           /*      runOnUiThread(new Runnable() {
                     @Override
@@ -265,8 +271,12 @@ public class NewTravelActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                System.out.println("\nDoing onResponse");
+                final String myResponse = response.body().string();
+
                 if (response.isSuccessful()) {
-                    final String myResponse = response.body().string();
+                    System.out.println("\nDoing isSuccessful");
+                    System.out.println(myResponse);
 
                     Type type = Types.newParameterizedType(Travel.class);
                     JsonAdapter<Travel> adapter = moshi.adapter(type);
@@ -285,6 +295,10 @@ public class NewTravelActivity extends AppCompatActivity {
                             testTextView.append(myResponse);
                         }
                     });   */
+                }
+                else { // npr. unauthorized 401
+                    System.out.println("\nDoing isNotSuccessful");
+                    System.out.println(myResponse);
                 }
             }
         });

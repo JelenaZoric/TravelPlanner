@@ -3,6 +3,7 @@ package com.ftn.uns.travelplaner;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -27,8 +28,10 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -39,8 +42,6 @@ public class RegisterActivity extends AppCompatActivity {
     private Moshi moshi = new Moshi.Builder()
             .add(Date.class, new Rfc3339DateJsonAdapter())
             .build();
-
-    private RegisterActivity.UserRegisterTask mAuthTask = null;
 
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -80,68 +81,20 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        run(); // Radi fetching sa bekenda
+//        run(); // Radi fetching sa bekenda
 
         Button testButton = findViewById(R.id.testButton);
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("\nTestButton Click!");
-                run();
-            }
-        });
-    }
-
-    void run() {
-        final String url = getString(R.string.BASE_URL) + "travels";
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        testTextView.setText(R.string.network_failure);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    final String myResponse = response.body().string();
-
-                    Type type = Types.newParameterizedType(List.class, Travel.class);
-                    JsonAdapter<List<Travel>> adapter = moshi.adapter(type);
-                    List<Travel> travels = adapter.fromJson(myResponse);
-
-                    for (Travel travel : travels) {  // Testiranja radi.
-                        System.out.println("\nTravel:");
-                        System.out.println(travel.currency);
-                        System.out.println(travel.destination.departure);
-                        System.out.println(travel.accommodation.email);
-                    }
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            testTextView.append(myResponse);
-                        }
-                    });
-                }
+//                run();
+                attemptRegister();
             }
         });
     }
 
     private void attemptRegister() {
-        if (mAuthTask != null) {
-            return;
-        }
-
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
@@ -173,11 +126,84 @@ public class RegisterActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            mAuthTask = new RegisterActivity.
-                    UserRegisterTask(email, password, firstName, lastName, location);
-
-            mAuthTask.execute((Void) null);
+            sendRegisterRequest();
         }
+    }
+
+    private void sendRegisterRequest() {
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView .getText().toString();
+        String firstName = mFirstNameView.getText().toString();
+        String lastName = mLastNameView.getText().toString();
+        String[] locationString = mLocationView.getText().toString().split(",");
+        Location location = new Location(locationString[0].trim(), locationString[1].trim());
+
+        User newUser = new User(email, password, firstName, lastName, location);
+
+        Type type = Types.newParameterizedType(User.class);
+        JsonAdapter<User> adapter = moshi.adapter(type);
+        String newUserString = adapter.toJson(newUser);
+
+        final String url = getString(R.string.BASE_URL) + "register";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), newUserString))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        testTextView.setText(R.string.network_failure);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                if (response.isSuccessful()) {
+                    System.out.println("\n  GOOD System.out.println(myResponse);");
+                    System.out.println(myResponse);
+//                    Type type = Types.newParameterizedType(User.class);
+//                    JsonAdapter<List<Travel>> adapter = moshi.adapter(type);
+//                    List<Travel> travels = adapter.toJson();
+
+//                    for (Travel travel : travels) {  // Testiranja radi.
+//                        System.out.println("\nTravel:");
+//                        System.out.println(travel.currency);
+//                        System.out.println(travel.destination.departure);
+//                        System.out.println(travel.accommodation.email);
+//                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            testTextView.append(myResponse);
+                        }
+                    });
+
+                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+                else {
+                    System.out.println("\n  BAD System.out.println(myResponse);");
+                    System.out.println(myResponse);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            testTextView.append(myResponse);
+                        }
+                    });
+                }
+            }
+        });
+
     }
 
     private boolean isEmailValid(String email) {
@@ -188,65 +214,4 @@ public class RegisterActivity extends AppCompatActivity {
         return password.length() > 6 && !password.toLowerCase().equals(password);
     }
 
-    public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-        private final String mFirstName;
-        private final String mLastName;
-        private final String mLocation;
-
-        public UserRegisterTask(
-                String mEmail,
-                String mPassword,
-                String mFirstName,
-                String mLastName,
-                String mLocation) {
-
-            this.mEmail = mEmail;
-            this.mPassword = mPassword;
-            this.mFirstName = mFirstName;
-            this.mLastName = mLastName;
-            this.mLocation = mLocation;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-
-            if (success) {
-                Mocker.db = new User();
-                Mocker.db.email = mEmail;
-                Mocker.db.firstName = mFirstName;
-                Mocker.db.lastName = mLastName;
-
-                String[] parts = mLocation.split(",");
-                Mocker.db.location = new Location();
-                Mocker.db.location.city = parts[0];
-                Mocker.db.location.country = parts[1];
-
-                Intent intent = new Intent(RegisterActivity.this, TravelsActivity.class);
-                startActivity(intent);
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-        }
-    }
 }

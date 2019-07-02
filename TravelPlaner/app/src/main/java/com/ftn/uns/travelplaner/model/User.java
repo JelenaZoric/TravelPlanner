@@ -12,4 +12,19 @@ public class User implements Serializable {
     public String lastName;
     public Location location;
     public List<Travel> travels = new ArrayList<>();
+
+    public User() {}
+
+    public User(String email, String password, String firstName, String lastName, Location location) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.location = location;
+    }
+
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
