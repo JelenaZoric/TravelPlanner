@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Transportation implements Serializable {
@@ -19,6 +20,7 @@ public class Transportation implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private Date departure;
+	@ManyToOne
 	private Location location;
 	
 	public Transportation() {}

@@ -11,7 +11,7 @@ public class JWToken {
     private UsernamePasswordAuthenticationToken userToken;
 
     public JWToken(String user){
-        this.userToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+        this.userToken = new UsernamePasswordAuthenticationToken(user, null, (Collection<? extends GrantedAuthority>) new ArrayList<>());
     }
 
     public UsernamePasswordAuthenticationToken getUserToken(){

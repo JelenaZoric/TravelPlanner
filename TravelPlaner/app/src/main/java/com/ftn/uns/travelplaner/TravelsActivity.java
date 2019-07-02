@@ -96,6 +96,7 @@ public class TravelsActivity extends AppCompatActivity
                                     long id) {
                 Mocker.dbTravel = Mocker.db.travels.get(position);
                 Intent intent = new Intent(TravelsActivity.this, TravelInfoActivity.class);
+                intent.putExtra("id", id);
                 startActivity(intent);
             }
         });
@@ -175,6 +176,19 @@ public class TravelsActivity extends AppCompatActivity
                     Type type = Types.newParameterizedType(List.class, Travel.class);
                     JsonAdapter<List<Travel>> adapter = moshi.adapter(type);
                     List<Travel> travels = adapter.fromJson(myResponse);
+                    //setState();
+                    /*
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ListView travelsView = findViewById(R.id.travels_list);
+                            travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, travels));
+
+                            setOnClickListener(travelsView);
+                        }
+                    });
+                    */
+
                 }
                 else {
                     runOnUiThread(new Runnable() {
@@ -189,4 +203,5 @@ public class TravelsActivity extends AppCompatActivity
 
         return new ArrayList<Travel>();
     }
+
 }

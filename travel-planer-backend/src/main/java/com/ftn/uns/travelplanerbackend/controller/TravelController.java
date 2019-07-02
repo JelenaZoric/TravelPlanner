@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ftn.uns.travelplanerbackend.model.Location;
+import com.ftn.uns.travelplanerbackend.model.Object;
+import com.ftn.uns.travelplanerbackend.model.Transportation;
 import com.ftn.uns.travelplanerbackend.model.Travel;
 import com.ftn.uns.travelplanerbackend.service.LocationService;
 import com.ftn.uns.travelplanerbackend.service.ObjectService;
@@ -46,12 +49,24 @@ public class TravelController {
 	
 	@RequestMapping(method=RequestMethod.POST, consumes="application/json")
 	public ResponseEntity<Travel> addTravel(@RequestBody Travel travel) {
-		/*	Location startingLoc = locationService.save(travel.getOrigin().getLocation());
+		/*
+		Location startingLoc = locationService.save(travel.getOrigin().getLocation());
 		Location destinationLoc = locationService.save(travel.getDestination().getLocation());
-		Transportation transportationOrigin = transportationService.save(travel.getOrigin());
-		Transportation transportationDestination = transportationService.save(travel.getDestination());
+		Transportation transportationOrigin = travel.getOrigin();
+		transportationOrigin.setLocation(startingLoc);
+		transportationOrigin = transportationService.save(transportationOrigin);
+		Transportation transportationDestination = travel.getDestination();
+		transportationDestination.setLocation(destinationLoc);
+		transportationDestination = transportationService.save(transportationDestination);
+		
 		Location accommodationLoc = locationService.save(travel.getAccommodation().getLocation());
-		com.ftn.uns.travelplanerbackend.model.Object object = objectService.save(travel.getAccommodation());   */
+		Object accommodation = travel.getAccommodation();
+		accommodation.setLocation(accommodationLoc);
+		com.ftn.uns.travelplanerbackend.model.Object object = objectService.save(accommodation);
+		travel.setAccommodation(object);
+		travel.setDestination(transportationDestination);
+		travel.setOrigin(transportationOrigin);
+		*/
 		Travel newTravel = travelService.save(travel);
 		return new ResponseEntity<Travel>(newTravel, HttpStatus.CREATED);
 	}
