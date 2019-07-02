@@ -4,11 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -23,14 +19,17 @@ public class Object implements Serializable{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private String name;
+	@ManyToOne
 	private Location location;
 	private String address;
 	private String email;
 	private String phoneNumber;
+	@Enumerated(EnumType.ORDINAL)
 	private ActivityType type;
 	private double rating;
 	private String imagePath;
 	private String description;
+
 	@OneToMany
 	@JsonIgnore
 	private List<Comment> comments = new ArrayList<>();

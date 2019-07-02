@@ -11,4 +11,5 @@ public interface ObjectService {
 	Object save(Object object);
 	Object delete(Long id);
 	void delete(List<Long> ids);
+	List<Object> getObjectsByLocationAndType(String locationString, String type);
 }
