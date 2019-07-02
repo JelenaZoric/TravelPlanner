@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
         Location userLocation = user.getLocation();
         String userCity = userLocation.getCity();
         String userCountry = userLocation.getCountry();
-        Optional<Location> optionalLocation = locationRepository.findByCityAndAndCountry(userCity, userCountry);
+        Optional<Location> optionalLocation = locationRepository.findByCityAndCountry(userCity, userCountry);
         Location persistentLocation;
 
         if (optionalLocation.isPresent()) {
