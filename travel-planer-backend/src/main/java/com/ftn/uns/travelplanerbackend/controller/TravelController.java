@@ -46,12 +46,6 @@ public class TravelController {
 	
 	@RequestMapping(method=RequestMethod.POST, consumes="application/json")
 	public ResponseEntity<Travel> addTravel(@RequestBody Travel travel) {
-		/*	Location startingLoc = locationService.save(travel.getOrigin().getLocation());
-		Location destinationLoc = locationService.save(travel.getDestination().getLocation());
-		Transportation transportationOrigin = transportationService.save(travel.getOrigin());
-		Transportation transportationDestination = transportationService.save(travel.getDestination());
-		Location accommodationLoc = locationService.save(travel.getAccommodation().getLocation());
-		com.ftn.uns.travelplanerbackend.model.Object object = objectService.save(travel.getAccommodation());   */
 		Travel newTravel = travelService.save(travel);
 		return new ResponseEntity<Travel>(newTravel, HttpStatus.CREATED);
 	}

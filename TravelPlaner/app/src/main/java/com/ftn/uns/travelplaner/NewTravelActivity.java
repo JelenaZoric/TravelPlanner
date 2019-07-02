@@ -213,12 +213,8 @@ public class NewTravelActivity extends AppCompatActivity {
         Location location = new Location();
 
         String[] content = view.getText().toString().split(",");
-        location.city = content[0];
-        location.country = content[1];
-
-        List<Double> coords = Mocker.mockCoordinates(-1);
-        location.latitude = coords.get(0);
-        location.longitude = coords.get(1);
+        location.city = content[0].trim();
+        location.country = content[1].trim();
 
         return location;
     }
@@ -250,7 +246,6 @@ public class NewTravelActivity extends AppCompatActivity {
     }
 
     void doPostRequest(String url, String json) throws IOException {
-        System.out.println("\nDoing doPostRequest");
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
@@ -259,42 +254,17 @@ public class NewTravelActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                System.out.println("\nDoing Failure");
                 e.printStackTrace();
-          /*      runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        testTextView.setText(R.string.network_failure);
-                    }
-                }); */
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                System.out.println("\nDoing onResponse");
                 final String myResponse = response.body().string();
 
                 if (response.isSuccessful()) {
-                    System.out.println("\nDoing isSuccessful");
-                    System.out.println(myResponse);
-
                     Type type = Types.newParameterizedType(Travel.class);
                     JsonAdapter<Travel> adapter = moshi.adapter(type);
                     Travel travel = adapter.fromJson(myResponse);
-
-                    // Testiranja radi.
-                    System.out.println("\nTravel:");
-                    // System.out.println(travel.currency);
-                    System.out.println(travel.destination.departure);
-                    System.out.println(travel.accommodation.email);
-
-
-                 /*   runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            testTextView.append(myResponse);
-                        }
-                    });   */
                 }
                 else { // npr. unauthorized 401
                     System.out.println("\nDoing isNotSuccessful");
