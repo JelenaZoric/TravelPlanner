@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.ftn.uns.travelplanerbackend.model.Location;
 
+import java.util.Optional;
+
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
 
+    Optional<Location> findByCityAndAndCountry(String city, String country);
 }

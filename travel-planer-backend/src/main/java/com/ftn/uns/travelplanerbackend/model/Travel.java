@@ -18,9 +18,9 @@ public class Travel implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	@Column(length = 1000) // potrebno zbog ogranicenja od 255 karaktera
+	@OneToOne(cascade = CascadeType.ALL)
 	private Transportation origin;
-	@Column(length = 1000)
+	@OneToOne(cascade = CascadeType.ALL)
 	private Transportation destination;
 	private String currency;
 	private TransportationMode mode;
