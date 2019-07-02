@@ -121,7 +121,8 @@ public class TravelInfoActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(TravelInfoActivity.this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         if (id == R.id.action_edit) {
