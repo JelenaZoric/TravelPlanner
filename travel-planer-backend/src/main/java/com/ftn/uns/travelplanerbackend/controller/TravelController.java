@@ -34,10 +34,14 @@ public class TravelController {
 		List<Travel> travels = user.getTravels();
 		return new ResponseEntity<List<Travel>>(travels, HttpStatus.OK);
 	}
-	
+
+	@PreAuthorize("isAuthenticated()")
 	@RequestMapping(value="{id}")
 	public ResponseEntity<Travel> getTravel(@PathVariable("id") Long id) {
 		Travel travel = travelService.findOne(id);
+		System.out.println("\nSystem.out.println(travel.getId());");
+		System.out.println(travel.getId());
+		System.out.println(travel.getCurrency());
 		return new ResponseEntity<Travel>(travel, HttpStatus.OK);
 	}
 	

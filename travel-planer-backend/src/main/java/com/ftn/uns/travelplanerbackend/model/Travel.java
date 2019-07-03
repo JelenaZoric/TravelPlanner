@@ -24,7 +24,7 @@ public class Travel implements Serializable {
 	private Transportation destination;
 	private String currency;
 	private TransportationMode mode;
-	@Column(length = 1000)
+	@OneToOne(cascade = CascadeType.ALL)
 	private Object accommodation;
 	@JsonIgnore
 	@OneToMany
