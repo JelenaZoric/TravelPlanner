@@ -1,6 +1,8 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.ftn.uns.travelplaner.adapters.TravelsAdapter;
 import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.ActivityType;
@@ -34,6 +37,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -44,7 +48,8 @@ import okhttp3.Response;
 public class TravelInfoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
-    private Travel travel;
+    CountDownLatch countDownLatch = new CountDownLatch(2);
+
     OkHttpClient client = new OkHttpClient.Builder()
             .addInterceptor(new AuthInterceptor(this))
             .build();
@@ -52,6 +57,12 @@ public class TravelInfoActivity extends AppCompatActivity
     private Moshi moshi = new Moshi.Builder()
             .add(Date.class, new Rfc3339DateJsonAdapter())
             .build();
+
+    ProgressDialog progressDialog;
+
+    Long currentTravelId;
+
+    Travel travel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,43 +88,76 @@ public class TravelInfoActivity extends AppCompatActivity
     }
 
     private void setState() {
+        currentTravelId = getIntent().getLongExtra("current_travel_id", 0);
 
-        Intent intent = getIntent();
-        Long id = intent.getLongExtra("id", 1);
-        travel = getTravel(id);
+        final String url = getString(R.string.BASE_URL) + "travels/" + currentTravelId.toString();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setTitle("Loading travel");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
 
-        //travel = Mocker.dbTravel;
-        if(travel != null) {
-            setTitle(travel.destination.location.toString());
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("\nErrororororor\n");
+                        progressDialog.dismiss();
+                    }
+                });
+            }
 
-            TextView startPointView = findViewById(R.id.travel_start_point);
-            startPointView.setText(travel.origin.location.toString());
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                progressDialog.dismiss();
 
-            TextView startTimeView = findViewById(R.id.travel_start_time);
-            startTimeView.setText(DateTimeFormatter.formatDateTime(travel.origin.departure));
+                final String myResponse = response.body().string();
 
-            TextView endPointView = findViewById(R.id.travel_end_point);
-            endPointView.setText(travel.destination.location.toString());
+                if (response.isSuccessful()) {
+                    Type type = Types.newParameterizedType(Travel.class);
+                    JsonAdapter<Travel> adapter = moshi.adapter(type);
+                    travel = adapter.fromJson(myResponse);
 
-            TextView endTimeView = findViewById(R.id.travel_end_time);
-            endTimeView.setText(DateTimeFormatter.formatDateTime(travel.destination.departure));
+                    countDownLatch.countDown();
+                    progressDialog.dismiss();
 
-            TextView accommodationNameView = findViewById(R.id.accommodation_name);
-            accommodationNameView.setText(travel.accommodation.name);
-
-            TextView accommodationAddressView = findViewById(R.id.accommodation_address);
-            accommodationAddressView.setText(travel.accommodation.address);
-
-            TextView accommodationEmailView = findViewById(R.id.accommodation_email);
-            accommodationEmailView.setText(travel.accommodation.email);
-
-            TextView accommodationPhoneView = findViewById(R.id.accommodation_phone_number);
-            accommodationPhoneView.setText(travel.accommodation.phoneNumber);
-        }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateView(travel);
+                        }
+                    });
+                }
+                else {
+                    countDownLatch.countDown();
+                    progressDialog.dismiss();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("\n" + TravelInfoActivity.class.getName() + " - Manji Errororor - 181\n");
+                        }
+                    });
+                }
+            }
+        });
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
+        countDownLatch.countDown();
+        try {
+            countDownLatch.await();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         List<Double> coordinates = Arrays.asList(
                 travel.accommodation.location.latitude,
                 travel.accommodation.location.longitude);
@@ -190,46 +234,31 @@ public class TravelInfoActivity extends AppCompatActivity
         return true;
     }
 
-    private Travel getTravel(Long id) {
-        final String url = getString(R.string.BASE_URL) + "travels/" + id;
+    private void updateView(Travel travel) {
+        setTitle(travel.destination.location.toString());
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        TextView startPointView = findViewById(R.id.travel_start_point);
+        startPointView.setText(travel.origin.location.toString());
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        System.out.println("\nErrororororor\n");
-                    }
-                });
-            }
+        TextView startTimeView = findViewById(R.id.travel_start_time);
+        startTimeView.setText(DateTimeFormatter.formatDateTime(travel.origin.departure));
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String myResponse = response.body().string();
-                System.out.println(myResponse);
+        TextView endPointView = findViewById(R.id.travel_end_point);
+        endPointView.setText(travel.destination.location.toString());
 
-                if (response.isSuccessful()) {
-                    Type type = Types.newParameterizedType(Travel.class);
-                    JsonAdapter<Travel> adapter = moshi.adapter(type);
-                    travel = adapter.fromJson(myResponse);
-                }
-                else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            System.out.println("\nManji Errororor\n");
-                        }
-                    });
-                }
-            }
-        });
+        TextView endTimeView = findViewById(R.id.travel_end_time);
+        endTimeView.setText(DateTimeFormatter.formatDateTime(travel.destination.departure));
 
-        return travel;
+        TextView accommodationNameView = findViewById(R.id.accommodation_name);
+        accommodationNameView.setText(travel.accommodation.name);
+
+        TextView accommodationAddressView = findViewById(R.id.accommodation_address);
+        accommodationAddressView.setText(travel.accommodation.address);
+
+        TextView accommodationEmailView = findViewById(R.id.accommodation_email);
+        accommodationEmailView.setText(travel.accommodation.email);
+
+        TextView accommodationPhoneView = findViewById(R.id.accommodation_phone_number);
+        accommodationPhoneView.setText(travel.accommodation.phoneNumber);
     }
 }

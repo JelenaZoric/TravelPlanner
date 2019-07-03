@@ -2,6 +2,7 @@ package com.ftn.uns.travelplaner;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -48,7 +49,7 @@ public class TravelsActivity extends AppCompatActivity
             .add(Date.class, new Rfc3339DateJsonAdapter())
             .build();
 
-    ProgressDialog progressDialog;
+    ProgressDialog progressDialog;  // https://stackoverflow.com/questions/35079083/android-loading-circle-spinner-between-two-activity
 
     ListView travelsView;
 
@@ -90,9 +91,9 @@ public class TravelsActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-//                Mocker.dbTravel = Mocker.db.travels.get(position);
+                Long travelId = travels.get(position).id;
                 Intent intent = new Intent(TravelsActivity.this, TravelInfoActivity.class);
-                intent.putExtra("id", id);
+                intent.putExtra("current_travel_id", travelId);
                 startActivity(intent);
             }
         });
