@@ -2,10 +2,13 @@ package com.ftn.uns.travelplanerbackend.controller;
 
 import java.util.List;
 
+import com.ftn.uns.travelplanerbackend.model.User;
+import com.ftn.uns.travelplanerbackend.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,10 +19,6 @@ import com.ftn.uns.travelplanerbackend.model.Location;
 import com.ftn.uns.travelplanerbackend.model.Object;
 import com.ftn.uns.travelplanerbackend.model.Transportation;
 import com.ftn.uns.travelplanerbackend.model.Travel;
-import com.ftn.uns.travelplanerbackend.service.LocationService;
-import com.ftn.uns.travelplanerbackend.service.ObjectService;
-import com.ftn.uns.travelplanerbackend.service.TransportationService;
-import com.ftn.uns.travelplanerbackend.service.TravelService;
 
 @RestController
 @RequestMapping(value="travels")
@@ -30,14 +29,13 @@ public class TravelController {
 	@Autowired
 	private LocationService locationService;
 	@Autowired
-	private TransportationService transportationService;
-	@Autowired
-	private ObjectService objectService;
+	private UserService userService;
 
 	@PreAuthorize("isAuthenticated()")
 	@RequestMapping
-	public ResponseEntity<List<Travel>> getAllTravels() {
-		List<Travel> travels = travelService.findAll();
+	public ResponseEntity<List<Travel>> getAllTravels(Authentication authentication) {
+		User user = userService.findOne(Long.valueOf(authentication.getName()));
+		List<Travel> travels = user.getTravels();
 		return new ResponseEntity<List<Travel>>(travels, HttpStatus.OK);
 	}
 	
@@ -48,26 +46,11 @@ public class TravelController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, consumes="application/json")
-	public ResponseEntity<Travel> addTravel(@RequestBody Travel travel) {
-		/*
-		Location startingLoc = locationService.save(travel.getOrigin().getLocation());
-		Location destinationLoc = locationService.save(travel.getDestination().getLocation());
-		Transportation transportationOrigin = travel.getOrigin();
-		transportationOrigin.setLocation(startingLoc);
-		transportationOrigin = transportationService.save(transportationOrigin);
-		Transportation transportationDestination = travel.getDestination();
-		transportationDestination.setLocation(destinationLoc);
-		transportationDestination = transportationService.save(transportationDestination);
-		
-		Location accommodationLoc = locationService.save(travel.getAccommodation().getLocation());
-		Object accommodation = travel.getAccommodation();
-		accommodation.setLocation(accommodationLoc);
-		com.ftn.uns.travelplanerbackend.model.Object object = objectService.save(accommodation);
-		travel.setAccommodation(object);
-		travel.setDestination(transportationDestination);
-		travel.setOrigin(transportationOrigin);
-		*/
+	public ResponseEntity<Travel> addTravel(@RequestBody Travel travel, Authentication authentication) {
 		Travel newTravel = travelService.save(travel);
+		User user = userService.findOne(Long.valueOf(authentication.getName()));
+		user.addTravel(newTravel);
+		userService.save(user);
 		return new ResponseEntity<Travel>(newTravel, HttpStatus.CREATED);
 	}
 	

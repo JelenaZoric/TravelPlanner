@@ -1,0 +1,8 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="routeColour"
+        android:title="Route colour"
+        android:summary="Choose your route colour"
+        android:entries="@array/colours"
+        android:entryValues="@array/colours"/>
+</PreferenceScreen>

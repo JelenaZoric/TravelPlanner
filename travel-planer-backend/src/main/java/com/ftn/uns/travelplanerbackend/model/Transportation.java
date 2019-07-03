@@ -3,11 +3,7 @@ package com.ftn.uns.travelplanerbackend.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 public class Transportation implements Serializable {
@@ -20,7 +16,7 @@ public class Transportation implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private Date departure;
-	@ManyToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Location location;
 	
 	public Transportation() {}

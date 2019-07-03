@@ -77,12 +77,12 @@ public class TravelInfoActivity extends AppCompatActivity
     }
 
     private void setState() {
-        /*
+
         Intent intent = getIntent();
         Long id = intent.getLongExtra("id", 1);
-        Travel travel = getTravel(id);
-        */
-        travel = Mocker.dbTravel;
+        travel = getTravel(id);
+
+        //travel = Mocker.dbTravel;
         if(travel != null) {
             setTitle(travel.destination.location.toString());
 
@@ -115,8 +115,8 @@ public class TravelInfoActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap map) {
         List<Double> coordinates = Arrays.asList(
-                Mocker.dbTravel.accommodation.location.latitude,
-                Mocker.dbTravel.accommodation.location.longitude);
+                travel.accommodation.location.latitude,
+                travel.accommodation.location.longitude);
 
         LatLng destination = new LatLng(coordinates.get(0), coordinates.get(1));
 
@@ -140,7 +140,7 @@ public class TravelInfoActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_full_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_bar, menu);
         return true;
     }
 
@@ -149,7 +149,8 @@ public class TravelInfoActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(TravelInfoActivity.this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         if (id == R.id.action_edit) {

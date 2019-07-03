@@ -1,7 +1,7 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -16,12 +16,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.auth0.android.jwt.JWT;
 import com.ftn.uns.travelplaner.adapters.TravelsAdapter;
 import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Travel;
-import com.ftn.uns.travelplaner.model.User;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -32,14 +30,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class TravelsActivity extends AppCompatActivity
@@ -53,12 +48,20 @@ public class TravelsActivity extends AppCompatActivity
             .add(Date.class, new Rfc3339DateJsonAdapter())
             .build();
 
+    ProgressDialog progressDialog;
+
+    ListView travelsView;
+
+    private List<Travel> travels = new ArrayList<Travel>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travels);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        travelsView = findViewById(R.id.travels_list);
 
         FloatingActionButton fab = findViewById(R.id.new_travel);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,19 +85,12 @@ public class TravelsActivity extends AppCompatActivity
     }
 
     private void setState() {
-        ListView travelsView = findViewById(R.id.travels_list);
-        List<Travel> travels = getTravels();
-        travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, travels));
-
-        setOnClickListener(travelsView);
-    }
-
-    private void setOnClickListener(ListView listView) {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        getTravels();
+        travelsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Mocker.dbTravel = Mocker.db.travels.get(position);
+//                Mocker.dbTravel = Mocker.db.travels.get(position);
                 Intent intent = new Intent(TravelsActivity.this, TravelInfoActivity.class);
                 intent.putExtra("id", id);
                 startActivity(intent);
@@ -123,7 +119,8 @@ public class TravelsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(TravelsActivity.this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -147,13 +144,20 @@ public class TravelsActivity extends AppCompatActivity
         return true;
     }
 
-    private List<Travel> getTravels(){
+    private void getTravels(){
 
         final String url = getString(R.string.BASE_URL) + "travels";
 
         Request request = new Request.Builder()
                 .url(url)
                 .build();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setTitle("Loading travels");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -163,32 +167,28 @@ public class TravelsActivity extends AppCompatActivity
                     @Override
                     public void run() {
                         System.out.println("\nErrororororor\n");
+                        progressDialog.dismiss();
                     }
                 });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                progressDialog.dismiss();
+
                 final String myResponse = response.body().string();
                 System.out.println(myResponse);
 
                 if (response.isSuccessful()) {
                     Type type = Types.newParameterizedType(List.class, Travel.class);
                     JsonAdapter<List<Travel>> adapter = moshi.adapter(type);
-                    List<Travel> travels = adapter.fromJson(myResponse);
-                    //setState();
-                    /*
+                    travels = adapter.fromJson(myResponse);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            ListView travelsView = findViewById(R.id.travels_list);
                             travelsView.setAdapter(new TravelsAdapter(TravelsActivity.this, travels));
-
-                            setOnClickListener(travelsView);
                         }
                     });
-                    */
-
                 }
                 else {
                     runOnUiThread(new Runnable() {
@@ -200,8 +200,5 @@ public class TravelsActivity extends AppCompatActivity
                 }
             }
         });
-
-        return new ArrayList<Travel>();
     }
-
 }

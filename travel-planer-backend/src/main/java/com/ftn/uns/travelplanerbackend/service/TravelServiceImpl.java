@@ -1,7 +1,13 @@
 package com.ftn.uns.travelplanerbackend.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.ftn.uns.travelplanerbackend.model.Location;
+import com.ftn.uns.travelplanerbackend.model.Transportation;
+import com.ftn.uns.travelplanerbackend.repository.LocationRepository;
+import com.ftn.uns.travelplanerbackend.repository.TransportationRepository;
+import com.ftn.uns.travelplanerbackend.utils.GoogleCoordinatesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +21,12 @@ public class TravelServiceImpl implements TravelService {
 
 	@Autowired
 	private TravelRepository travelRepository;
+
+	@Autowired
+	private LocationRepository locationRepository;
+
+	@Autowired
+	private TransportationRepository transportationRepository;
 	
 	@Override
 	public Travel findOne(Long id) {
@@ -28,6 +40,12 @@ public class TravelServiceImpl implements TravelService {
 
 	@Override
 	public Travel save(Travel travel) {
+		Transportation origin = travel.getOrigin();
+		Transportation destination = travel.getDestination();
+
+		origin.setLocation(getProperLocation(origin));
+		destination.setLocation(getProperLocation(destination));
+
 		return travelRepository.save(travel);
 	}
 
@@ -48,4 +66,18 @@ public class TravelServiceImpl implements TravelService {
 		}
 	}
 
+	Location getProperLocation(Transportation transportation) {
+		Location transportationLocation = transportation.getLocation();
+		Optional<Location> optionalTransportationLocation = locationRepository.findByCityAndCountry(transportationLocation.getCity(), transportationLocation.getCountry());
+		Location persistentTransportationLocation;
+
+		if (optionalTransportationLocation.isPresent()) {
+			persistentTransportationLocation = optionalTransportationLocation .get();
+		}
+		else {
+			GoogleCoordinatesService googleCoordinatesService = new GoogleCoordinatesService();
+			persistentTransportationLocation = locationRepository.save(googleCoordinatesService.getCoordinatesFromAddress(transportationLocation.getCity(), transportationLocation.getCountry()));
+		}
+		return persistentTransportationLocation;
+	}
 }

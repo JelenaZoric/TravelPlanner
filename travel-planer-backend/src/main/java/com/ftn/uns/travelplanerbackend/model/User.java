@@ -99,4 +99,8 @@ public class User implements Serializable {
 	public void setTravels(List<Travel> travels) {
 		this.travels = travels;
 	}
+
+	public void addTravel(Travel travel) {
+		travels.add(travel);
+	}
 }

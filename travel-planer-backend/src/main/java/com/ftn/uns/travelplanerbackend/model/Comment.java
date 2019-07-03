@@ -2,10 +2,7 @@ package com.ftn.uns.travelplanerbackend.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Comment implements Serializable {
@@ -19,6 +16,8 @@ public class Comment implements Serializable {
 	private Long id;
 	private String text;
     private double rating;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
     
     public Comment() {}

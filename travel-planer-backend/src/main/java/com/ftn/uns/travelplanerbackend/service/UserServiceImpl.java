@@ -1,8 +1,11 @@
 package com.ftn.uns.travelplanerbackend.service;
 
 import com.ftn.uns.travelplanerbackend.configuration.jwt.JWTokenProvider;
+import com.ftn.uns.travelplanerbackend.model.Location;
 import com.ftn.uns.travelplanerbackend.model.User;
+import com.ftn.uns.travelplanerbackend.repository.LocationRepository;
 import com.ftn.uns.travelplanerbackend.repository.UserRepository;
+import com.ftn.uns.travelplanerbackend.utils.GoogleCoordinatesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +22,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Override
     public User findOne(Long id) {
@@ -72,6 +78,21 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
+        Location userLocation = user.getLocation();
+        String userCity = userLocation.getCity();
+        String userCountry = userLocation.getCountry();
+        Optional<Location> optionalLocation = locationRepository.findByCityAndCountry(userCity, userCountry);
+        Location persistentLocation;
+
+        if (optionalLocation.isPresent()) {
+            persistentLocation = optionalLocation.get();
+            user.setLocation(persistentLocation);
+        }
+        else {
+            GoogleCoordinatesService googleCoordinatesService = new GoogleCoordinatesService();
+            persistentLocation = locationRepository.save(googleCoordinatesService.getCoordinatesFromAddress(userCity, userCountry));
+            user.setLocation(persistentLocation);
+        }
         return userRepository.save(user);
     }
 

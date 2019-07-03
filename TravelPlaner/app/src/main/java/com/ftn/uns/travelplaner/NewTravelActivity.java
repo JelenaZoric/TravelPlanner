@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +15,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.ftn.uns.travelplaner.auth.AuthInterceptor;
-import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.ActivityType;
 import com.ftn.uns.travelplaner.model.Location;
 import com.ftn.uns.travelplaner.model.Object;
@@ -45,6 +45,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class NewTravelActivity extends AppCompatActivity {
+
+    ProgressDialog nDialog;
 
     EditText originView;
     Spinner dateFromView;
@@ -178,10 +180,6 @@ public class NewTravelActivity extends AppCompatActivity {
 
         if (id == R.id.action_save) {
             save();
-
-            Intent intent = new Intent(NewTravelActivity.this, TravelsActivity.class);
-            startActivity(intent);
-
             return true;
         }
 
@@ -189,6 +187,13 @@ public class NewTravelActivity extends AppCompatActivity {
     }
 
     private boolean save() {
+        nDialog = new ProgressDialog(this);
+        nDialog.setMessage("Loading...");
+        nDialog.setTitle("Creating Travel");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(true);
+        nDialog.show();
+
         travel.origin.location = createLocation(originView);
         travel.origin.departure = createTimestamp(dateFromView, timeFromView);
 
@@ -204,7 +209,6 @@ public class NewTravelActivity extends AppCompatActivity {
         travel.accommodation.address = addressView.getText().toString();
         travel.accommodation.phoneNumber = phoneView.getText().toString();
 
-//        Mocker.db.travels.add(travel);
         postTravel(travel);
         return true;
     }
@@ -213,12 +217,8 @@ public class NewTravelActivity extends AppCompatActivity {
         Location location = new Location();
 
         String[] content = view.getText().toString().split(",");
-        location.city = content[0];
-        location.country = content[1];
-
-        List<Double> coords = Mocker.mockCoordinates(-1);
-        location.latitude = coords.get(0);
-        location.longitude = coords.get(1);
+        location.city = content[0].trim();
+        location.country = content[1].trim();
 
         return location;
     }
@@ -250,7 +250,6 @@ public class NewTravelActivity extends AppCompatActivity {
     }
 
     void doPostRequest(String url, String json) throws IOException {
-        System.out.println("\nDoing doPostRequest");
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
@@ -259,46 +258,25 @@ public class NewTravelActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                System.out.println("\nDoing Failure");
                 e.printStackTrace();
-          /*      runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        testTextView.setText(R.string.network_failure);
-                    }
-                }); */
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                System.out.println("\nDoing onResponse");
                 final String myResponse = response.body().string();
 
                 if (response.isSuccessful()) {
-                    System.out.println("\nDoing isSuccessful");
-                    System.out.println(myResponse);
-
                     Type type = Types.newParameterizedType(Travel.class);
                     JsonAdapter<Travel> adapter = moshi.adapter(type);
                     Travel travel = adapter.fromJson(myResponse);
-
-                    // Testiranja radi.
-                    System.out.println("\nTravel:");
-                    // System.out.println(travel.currency);
-                    System.out.println(travel.destination.departure);
-                    System.out.println(travel.accommodation.email);
-
-
-                 /*   runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            testTextView.append(myResponse);
-                        }
-                    });   */
+                    nDialog.dismiss();
+                    Intent intent = new Intent(NewTravelActivity.this, TravelsActivity.class);
+                    startActivity(intent);
                 }
                 else { // npr. unauthorized 401
                     System.out.println("\nDoing isNotSuccessful");
                     System.out.println(myResponse);
+                    nDialog.dismiss();
                 }
             }
         });

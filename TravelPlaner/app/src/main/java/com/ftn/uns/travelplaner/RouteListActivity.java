@@ -93,7 +93,7 @@ public class RouteListActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_full_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_bar, menu);
         return true;
     }
 
@@ -102,7 +102,8 @@ public class RouteListActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(RouteListActivity.this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         if (id == R.id.action_edit) {

@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.auth0.android.jwt.JWT;
-import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.model.User;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -26,8 +25,6 @@ import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -152,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void sendLoginRequest() {
         String email = mEmailView.getText().toString();
-        String password = mPasswordView .getText().toString();
+        String password = mPasswordView.getText().toString();
 
         User user = new User(email, password);
 
@@ -198,8 +195,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(LoginActivity.this, TravelsActivity.class);
                     startActivity(intent);
-                }
-                else {
+                } else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
