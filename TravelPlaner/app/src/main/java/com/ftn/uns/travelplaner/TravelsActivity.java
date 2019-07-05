@@ -53,6 +53,8 @@ public class TravelsActivity extends AppCompatActivity
 
     ListView travelsView;
 
+    static Long selected_travel_id;
+
     private List<Travel> travels = new ArrayList<Travel>();
 
     @Override
@@ -94,6 +96,7 @@ public class TravelsActivity extends AppCompatActivity
                 Long travelId = travels.get(position).id;
                 Intent intent = new Intent(TravelsActivity.this, TravelInfoActivity.class);
                 intent.putExtra("current_travel_id", travelId);
+                selected_travel_id = travelId;
                 startActivity(intent);
             }
         });

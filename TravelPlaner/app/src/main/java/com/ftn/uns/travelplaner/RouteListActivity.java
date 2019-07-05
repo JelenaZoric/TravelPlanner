@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,15 +18,43 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ftn.uns.travelplaner.adapters.ActivitiesAdapter;
+import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Activity;
 import com.ftn.uns.travelplaner.model.Route;
 import com.ftn.uns.travelplaner.util.DateTimeFormatter;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class RouteListActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(new AuthInterceptor(this))
+            .build();
+
+    private Moshi moshi = new Moshi.Builder()
+            .add(Date.class, new Rfc3339DateJsonAdapter())
+            .build();
+
+    ProgressDialog progressDialog;
+    ListView activitiesView;
+    private List<Activity> activities = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +62,8 @@ public class RouteListActivity extends AppCompatActivity
         setContentView(R.layout.activity_route_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        activitiesView = findViewById(R.id.routes_list_list);
 
         FloatingActionButton fab = findViewById(R.id.new_activity);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -56,26 +87,14 @@ public class RouteListActivity extends AppCompatActivity
     }
 
     private void setState() {
-        Route route = Mocker.dbRoute;
-
-        setTitle(route.name);
-
-        TextView dateView = findViewById(R.id.route_date);
-        dateView.setText(DateTimeFormatter.formatDate(route.date));
-
-        ListView activitiesView = findViewById(R.id.routes_list_list);
-        activitiesView.setAdapter(new ActivitiesAdapter(RouteListActivity.this, Mocker.dbRoute.activities));
-
-        setOnClickListener(activitiesView);
-    }
-
-    private void setOnClickListener(ListView listView) {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        getActivities();
+        activitiesView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Mocker.dbActivity = Mocker.dbRoute.activities.get(position);
+                Long activityId = activities.get(position).id;
                 Intent intent = new Intent(RouteListActivity.this, ObjectActivity.class);
+                intent.putExtra("current_activity_id", activityId);
                 startActivity(intent);
             }
         });
@@ -148,5 +167,59 @@ public class RouteListActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    void getActivities() {
+        final String url = getString(R.string.BASE_URL) + "activities/" + RoutesActivity.currentRouteId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setTitle("Loading activities");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("\nErrororororor\n");
+                        progressDialog.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                progressDialog.dismiss();
+                final String myResponse = response.body().string();
+
+                if(response.isSuccessful()) {
+                    Type type = Types.newParameterizedType(List.class, Activity.class);
+                    JsonAdapter<List<Activity>> adapter = moshi.adapter(type);
+                    activities = adapter.fromJson(myResponse);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            activitiesView.setAdapter(new ActivitiesAdapter(RouteListActivity.this, activities));
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("Manji eror");
+                        }
+                    });
+                }
+            }
+        });
     }
 }

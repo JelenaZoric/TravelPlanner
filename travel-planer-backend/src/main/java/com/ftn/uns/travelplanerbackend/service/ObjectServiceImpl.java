@@ -7,12 +7,14 @@ import java.util.Optional;
 import com.ftn.uns.travelplanerbackend.model.ActivityType;
 import com.ftn.uns.travelplanerbackend.model.Location;
 import com.ftn.uns.travelplanerbackend.repository.LocationRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ftn.uns.travelplanerbackend.model.Object;
 import com.ftn.uns.travelplanerbackend.repository.ObjectRepository;
+import com.ftn.uns.travelplanerbackend.utils.GoogleCoordinatesService;
 
 @Transactional
 @Service
@@ -23,6 +25,8 @@ public class ObjectServiceImpl implements ObjectService {
 
 	@Autowired
 	private LocationRepository locationRepository;
+	@Autowired
+	private LocationService locationService;
 
 	@Override
 	public Object findOne(Long id) {
@@ -36,6 +40,8 @@ public class ObjectServiceImpl implements ObjectService {
 
 	@Override
 	public Object save(Object object) {
+		Location location = checkLocation(object.getLocation());
+		object.setLocation(location);
 		return objectRepository.save(object);
 	}
 
@@ -66,8 +72,22 @@ public class ObjectServiceImpl implements ObjectService {
 			return new ArrayList<>();
 		}
 
-		ActivityType activityType = ActivityType.valueOf(type);
+		ActivityType activityType = ActivityType.valueOf(type.toUpperCase());
 
 		return objectRepository.findByTypeAndLocation(activityType, location.get());
+	}
+	
+	public Location checkLocation(Location location) {
+		Optional<Location> optionalLocation = locationRepository.findByCityAndCountry(location.getCity(), location.getCountry());
+		Location persistentLocation;
+
+		if (optionalLocation.isPresent()) {
+			persistentLocation = optionalLocation.get();
+		}
+		else {
+			GoogleCoordinatesService googleCoordinatesService = new GoogleCoordinatesService();
+			persistentLocation = locationService.save(googleCoordinatesService.getCoordinatesFromAddress(location.getCity(), location.getCountry()));
+		}
+		return persistentLocation;
 	}
 }

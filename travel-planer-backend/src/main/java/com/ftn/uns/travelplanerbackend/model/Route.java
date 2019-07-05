@@ -1,14 +1,16 @@
 package com.ftn.uns.travelplanerbackend.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,12 +28,14 @@ public class Route implements Serializable {
 	private String name;
 	private Date date;
 	@JsonIgnore
-	@OneToMany
-	private List<Activity> activities = new ArrayList<>();
+	@OneToMany(mappedBy="activityRoute")
+	private Set<Activity> activities = new HashSet<>();
+	@ManyToOne//(cascade=CascadeType.ALL)
+	private Travel routeTravel;
 	
 	public Route() {}
 
-	public Route(String name, Date date, List<Activity> activities) {
+	public Route(String name, Date date, Set<Activity> activities) {
 		super();
 		this.name = name;
 		this.date = date;
@@ -62,11 +66,19 @@ public class Route implements Serializable {
 		this.date = date;
 	}
 
-	public List<Activity> getActivities() {
+	public Set<Activity> getActivities() {
 		return activities;
 	}
 
-	public void setActivities(List<Activity> activities) {
+	public void setActivities(Set<Activity> activities) {
 		this.activities = activities;
+	}
+
+	public Travel getRouteTravel() {
+		return routeTravel;
+	}
+
+	public void setRouteTravel(Travel routeTravel) {
+		this.routeTravel = routeTravel;
 	}
 }

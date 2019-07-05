@@ -24,6 +24,8 @@ public class TravelServiceImpl implements TravelService {
 
 	@Autowired
 	private LocationRepository locationRepository;
+	@Autowired
+	private LocationService locationService;
 
 	@Autowired
 	private TransportationRepository transportationRepository;
@@ -40,12 +42,6 @@ public class TravelServiceImpl implements TravelService {
 
 	@Override
 	public Travel save(Travel travel) {
-		Transportation origin = travel.getOrigin();
-		Transportation destination = travel.getDestination();
-
-		origin.setLocation(getProperLocation(origin));
-		destination.setLocation(getProperLocation(destination));
-
 		return travelRepository.save(travel);
 	}
 
@@ -64,20 +60,5 @@ public class TravelServiceImpl implements TravelService {
 		for(Long id:ids) {
 			this.delete(id);
 		}
-	}
-
-	Location getProperLocation(Transportation transportation) {
-		Location transportationLocation = transportation.getLocation();
-		Optional<Location> optionalTransportationLocation = locationRepository.findByCityAndCountry(transportationLocation.getCity(), transportationLocation.getCountry());
-		Location persistentTransportationLocation;
-
-		if (optionalTransportationLocation.isPresent()) {
-			persistentTransportationLocation = optionalTransportationLocation .get();
-		}
-		else {
-			GoogleCoordinatesService googleCoordinatesService = new GoogleCoordinatesService();
-			persistentTransportationLocation = locationRepository.save(googleCoordinatesService.getCoordinatesFromAddress(transportationLocation.getCity(), transportationLocation.getCountry()));
-		}
-		return persistentTransportationLocation;
 	}
 }

@@ -16,7 +16,7 @@ public class Transportation implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private Date departure;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne//(cascade = CascadeType.ALL)
 	private Location location;
 	
 	public Transportation() {}

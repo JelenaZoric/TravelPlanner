@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Object implements Serializable {
 
+    public Long id;
     public String name;
     public Location location;
     public String address;

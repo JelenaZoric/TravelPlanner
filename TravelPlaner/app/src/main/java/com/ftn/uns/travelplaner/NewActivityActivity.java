@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.ftn.uns.travelplaner.adapters.ObjectsAdapter;
+import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Activity;
 import com.ftn.uns.travelplaner.model.ActivityType;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,11 +48,16 @@ import okhttp3.Response;
 
 public class NewActivityActivity extends AppCompatActivity {
 
+    ProgressDialog nDialog;
+
     Spinner typeView;
     Spinner timeView;
     Activity activity;
-    private List<Object> mockerObjects;
-    OkHttpClient client = new OkHttpClient();
+    ListView objectsView;
+    private List<Object> objects = new ArrayList<>();
+    OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(new AuthInterceptor(this))
+            .build();
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
@@ -69,6 +77,8 @@ public class NewActivityActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        objectsView = findViewById(R.id.objects);
+
         Spinner spinner = findViewById(R.id.activity_type);
         spinner.setAdapter(new ArrayAdapter<>(
                 this, R.layout.support_simple_spinner_dropdown_item, ActivityType.values()));
@@ -77,15 +87,12 @@ public class NewActivityActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 String selectedItem = parentView.getSelectedItem().toString();
-
-                ListView objectsView = findViewById(R.id.objects);
-
+                /*
                 Random random = new Random();
                 mockerObjects = Mocker.mockObjects(random.nextInt(2) + 1, ActivityType.valueOf(selectedItem.toUpperCase()), -1);
-
-                objectsView.setAdapter(new ObjectsAdapter(NewActivityActivity.this, mockerObjects));
-
-                setOnClickListener(objectsView);
+                */
+                //String location =
+                getObjectsByType(ActivityType.valueOf(selectedItem.toUpperCase()));
             }
 
             @Override
@@ -138,8 +145,8 @@ public class NewActivityActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                activity.object = mockerObjects.get(position);
-                ListView objectsView = findViewById(R.id.objects);
+                activity.object = objects.get(position);
+
                 objectsView.setAdapter(new ObjectsAdapter(NewActivityActivity.this, Arrays.asList(activity.object)));
             }
         });
@@ -183,7 +190,6 @@ public class NewActivityActivity extends AppCompatActivity {
         activity.time = time;
         activity.type = ActivityType.valueOf(typeView.getSelectedItem().toString().toUpperCase());
 
-        Mocker.dbRoute.activities.add(activity);
         postActivity(activity);
         return true;
     }
@@ -236,11 +242,68 @@ public class NewActivityActivity extends AppCompatActivity {
         JsonAdapter<Activity> jsonAdapter = moshi.adapter(Activity.class);
 
         String json = jsonAdapter.toJson(activity);
-        final String url = getString(R.string.BASE_URL) + "activities";
+        final String url = getString(R.string.BASE_URL) + "activities/" + RoutesActivity.currentRouteId
+                + "/" + activity.object.id;
         try {
             doPostRequest(url, json);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    void getObjectsByType(ActivityType type) {
+        //get list of objects of certain type
+        final String url = getString(R.string.BASE_URL) + "objects?location=" + TravelInfoActivity.currentTravelDestination
+                + "&type=" + type.toString();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        nDialog = new ProgressDialog(this);
+        nDialog.setTitle("Loading objects");
+        nDialog.setMessage("Loading...");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(true);
+        nDialog.show();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("\nErrororororor\n");
+                        nDialog.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                nDialog.dismiss();
+                final String myResponse = response.body().string();
+
+                if(response.isSuccessful()) {
+                    Type type = Types.newParameterizedType(List.class, Object.class);
+                    JsonAdapter<List<Object>> adapter = moshi.adapter(type);
+                    objects = adapter.fromJson(myResponse);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            objectsView.setAdapter(new ObjectsAdapter(NewActivityActivity.this, objects));
+
+                            setOnClickListener(objectsView);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("Manji eror");
+                        }
+                    });
+                }
+            }
+        });
     }
 }

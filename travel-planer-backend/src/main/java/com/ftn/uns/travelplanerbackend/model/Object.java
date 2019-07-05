@@ -19,7 +19,7 @@ public class Object implements Serializable{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private String name;
-	@ManyToOne
+	@ManyToOne//(cascade=CascadeType.ALL)
 	private Location location;
 	private String address;
 	private String email;

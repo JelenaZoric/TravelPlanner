@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class Activity implements Serializable {
 
+    public Long id;
     public ActivityType type;
     public Object object;
     public Date time;

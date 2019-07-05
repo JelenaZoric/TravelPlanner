@@ -1,8 +1,8 @@
 package com.ftn.uns.travelplanerbackend.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -18,9 +18,9 @@ public class Travel implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne//(cascade = CascadeType.ALL)
 	private Transportation origin;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne//(cascade = CascadeType.ALL)
 	private Transportation destination;
 	private String currency;
 	private TransportationMode mode;
@@ -28,16 +28,16 @@ public class Travel implements Serializable {
 	private Object accommodation;
 	@JsonIgnore
 	@OneToMany
-	private List<Item> items = new ArrayList<>();
+	private Set<Item> items = new HashSet<>();
 	@JsonIgnore
-	@OneToMany
-	private List<Route> routes = new ArrayList<>();
+	@OneToMany(mappedBy="routeTravel")
+	private Set<Route> routes = new HashSet<>();
 
 	public Travel() {}
 
 	public Travel(Transportation origin, Transportation destination,
 			String currency, TransportationMode mode, Object accommodation,
-			List<Item> items, List<Route> routes) {
+			Set<Item> items, Set<Route> routes) {
 		super();
 		this.origin = origin;
 		this.destination = destination;
@@ -96,19 +96,19 @@ public class Travel implements Serializable {
 		this.accommodation = accommodation;
 	}
 
-	public List<Item> getItems() {
+	public Set<Item> getItems() {
 		return items;
 	}
 
-	public void setItems(List<Item> items) {
+	public void setItems(Set<Item> items) {
 		this.items = items;
 	}
 
-	public List<Route> getRoutes() {
+	public Set<Route> getRoutes() {
 		return routes;
 	}
 
-	public void setRoutes(List<Route> routes) {
+	public void setRoutes(Set<Route> routes) {
 		this.routes = routes;
 	}
 }

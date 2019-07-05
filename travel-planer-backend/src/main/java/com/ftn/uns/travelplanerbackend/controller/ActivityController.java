@@ -1,6 +1,7 @@
 package com.ftn.uns.travelplanerbackend.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.uns.travelplanerbackend.model.Activity;
+import com.ftn.uns.travelplanerbackend.model.Object;
+import com.ftn.uns.travelplanerbackend.model.Route;
 import com.ftn.uns.travelplanerbackend.service.ActivityService;
+import com.ftn.uns.travelplanerbackend.service.ObjectService;
+import com.ftn.uns.travelplanerbackend.service.RouteService;
 
 @RestController
 @RequestMapping(value="activities")
@@ -20,21 +25,31 @@ public class ActivityController {
 
 	@Autowired
 	private ActivityService activityService;
+	@Autowired
+	private RouteService routeService;
+	@Autowired
+	private ObjectService objectService;
 	
-	@RequestMapping
-	public ResponseEntity<List<Activity>> getAllActivities() {
-		List<Activity> activities = activityService.findAll();
-		return new ResponseEntity<List<Activity>>(activities, HttpStatus.OK);
+	@RequestMapping(value="{route_id}")
+	public ResponseEntity<Set<Activity>> getAllActivities(@PathVariable("route_id") Long route_id) {
+		Route route = routeService.findOne(route_id);
+		Set<Activity> activities = route.getActivities();
+		return new ResponseEntity<Set<Activity>>(activities, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="{id}")
+	@RequestMapping(value="getActivity/{id}")
 	public ResponseEntity<Activity> getActivity(@PathVariable("id") Long id) {
 		Activity activity = activityService.findOne(id);
 		return new ResponseEntity<Activity>(activity, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method=RequestMethod.POST, consumes="application/json")
-	public ResponseEntity<Activity> addActivity(@RequestBody Activity activity) {
+	@RequestMapping(value="{route_id}/{object_id}",method=RequestMethod.POST, consumes="application/json")
+	public ResponseEntity<Activity> addActivity(@RequestBody Activity activity,
+			@PathVariable("route_id") Long route_id, @PathVariable("object_id") Long object_id) {
+		Route route = routeService.findOne(route_id);
+		activity.setActivityRoute(route);
+		Object object = objectService.findOne(object_id);
+		activity.setObject(object);
 		Activity newActivity = activityService.save(activity);
 		return new ResponseEntity<Activity>(newActivity, HttpStatus.CREATED);
 	}

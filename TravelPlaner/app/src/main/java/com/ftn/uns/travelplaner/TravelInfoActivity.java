@@ -64,6 +64,8 @@ public class TravelInfoActivity extends AppCompatActivity
 
     Travel travel = null;
 
+    static String currentTravelDestination = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +127,7 @@ public class TravelInfoActivity extends AppCompatActivity
                     JsonAdapter<Travel> adapter = moshi.adapter(type);
                     travel = adapter.fromJson(myResponse);
 
+                    currentTravelDestination = travel.destination.location.city + "," + travel.destination.location.country;
                     countDownLatch.countDown();
                     progressDialog.dismiss();
 

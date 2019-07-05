@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Activity implements Serializable {
@@ -19,10 +20,13 @@ public class Activity implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private ActivityType type;
+	@ManyToOne
     private Object object;
     private Date time;
-    
-    public Activity() {}
+    @ManyToOne
+    private Route activityRoute;
+
+	public Activity() {}
     
 	public Activity(ActivityType type, Object object, Date time) {
 		super();
@@ -61,5 +65,13 @@ public class Activity implements Serializable {
 
 	public void setTime(Date time) {
 		this.time = time;
+	}
+	
+	public Route getActivityRoute() {
+		return activityRoute;
+	}
+
+	public void setActivityRoute(Route activityRoute) {
+		this.activityRoute = activityRoute;
 	}
 }

@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,10 +17,46 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.ftn.uns.travelplaner.adapters.RoutesAdapter;
+import com.ftn.uns.travelplaner.adapters.TravelsAdapter;
+import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.model.Route;
+import com.ftn.uns.travelplaner.model.Travel;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class RoutesActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(new AuthInterceptor(this))
+            .build();
+
+    private Moshi moshi = new Moshi.Builder()
+            .add(Date.class, new Rfc3339DateJsonAdapter())
+            .build();
+
+    ProgressDialog progressDialog;  // https://stackoverflow.com/questions/35079083/android-loading-circle-spinner-between-two-activity
+
+    ListView routesView;
+
+    static Long currentRouteId;
+
+    private List<Route> routes = new ArrayList<Route>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +64,8 @@ public class RoutesActivity extends AppCompatActivity
         setContentView(R.layout.activity_routes);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        routesView = findViewById(R.id.routes_list);
 
         FloatingActionButton fab = findViewById(R.id.new_route);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -50,19 +89,16 @@ public class RoutesActivity extends AppCompatActivity
     }
 
     private void setState() {
-        ListView routesView = findViewById(R.id.routes_list);
-        routesView.setAdapter(new RoutesAdapter(RoutesActivity.this, Mocker.dbTravel.routes));
+        getRoutes();
 
-        setOnClickListener(routesView);
-    }
-
-    private void setOnClickListener(ListView listView) {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        routesView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Mocker.dbRoute = Mocker.dbTravel.routes.get(position);
+                Long routeId = routes.get(position).id;
                 Intent intent = new Intent(RoutesActivity.this, RouteListActivity.class);
+                intent.putExtra("current_route_id", routeId);
+                currentRouteId = routeId;
                 startActivity(intent);
             }
         });
@@ -121,5 +157,61 @@ public class RoutesActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    void getRoutes() {
+        final String url = getString(R.string.BASE_URL) + "routes/" + TravelsActivity.selected_travel_id;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setTitle("Loading routes");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("\nErrororororor\n");
+                        progressDialog.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                progressDialog.dismiss();
+
+                final String myResponse = response.body().string();
+
+                if (response.isSuccessful()) {
+                    Type type = Types.newParameterizedType(List.class, Route.class);
+                    JsonAdapter<List<Route>> adapter = moshi.adapter(type);
+                    routes = adapter.fromJson(myResponse);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            routesView.setAdapter(new RoutesAdapter(RoutesActivity.this, routes));
+                        }
+                    });
+                }
+                else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("\nManji Errororor\n");
+                        }
+                    });
+                }
+            }
+        });
     }
 }

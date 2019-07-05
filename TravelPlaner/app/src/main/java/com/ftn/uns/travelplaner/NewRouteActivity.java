@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,9 @@ import android.view.MenuItem;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.ftn.uns.travelplaner.adapters.TravelItemsAdapter;
+import com.ftn.uns.travelplaner.adapters.TravelsAdapter;
+import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Activity;
 import com.ftn.uns.travelplaner.model.Route;
@@ -33,12 +37,16 @@ import okhttp3.Response;
 
 public class NewRouteActivity extends AppCompatActivity {
 
+    ProgressDialog nDialog;
+
     EditText nameView;
     DatePicker dateView;
 
     Route route;
 
-    OkHttpClient client = new OkHttpClient();
+    OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(new AuthInterceptor(this))
+            .build();
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
@@ -89,13 +97,20 @@ public class NewRouteActivity extends AppCompatActivity {
     }
 
     private boolean save() {
+        nDialog = new ProgressDialog(this);
+        nDialog.setMessage("Loading...");
+        nDialog.setTitle("Creating Route");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(true);
+        nDialog.show();
+
         route.name = nameView.getText().toString();
         //route.date = LocalDate.of(dateView.getYear(), dateView.getMonth() + 1, dateView.getDayOfMonth());
         Calendar c = Calendar.getInstance();
         c.set(dateView.getYear(), dateView.getMonth(), dateView.getDayOfMonth());
+        System.out.println(c.getTime());
         route.date = c.getTime();
 
-        Mocker.dbTravel.routes.add(route);
         postRoute(route);
         return true;
     }
@@ -110,35 +125,32 @@ public class NewRouteActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
-          /*      runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        testTextView.setText(R.string.network_failure);
+                        System.out.println("\nErrororororor\n");
                     }
-                }); */
+                });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
                 if (response.isSuccessful()) {
-                    final String myResponse = response.body().string();
-
                     Type type = Types.newParameterizedType(Route.class);
                     JsonAdapter<Route> adapter = moshi.adapter(type);
                     Route route = adapter.fromJson(myResponse);
 
+                    nDialog.dismiss();
+                    Intent intent = new Intent(NewRouteActivity.this, RoutesActivity.class);
+                    startActivity(intent);
                     // Testiranja radi.
-                    System.out.println("\nActivity:");
-                    // System.out.println(travel.currency);
+                    System.out.println("\nRoute:");
                     System.out.println(route.name);
-
-
-                 /*   runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            testTextView.append(myResponse);
-                        }
-                    });   */
+                } else {
+                    System.out.println("\nDoing isNotSuccessful");
+                    System.out.println(myResponse);
+                    //nDialog.dismiss();
                 }
             }
         });
@@ -148,7 +160,7 @@ public class NewRouteActivity extends AppCompatActivity {
         JsonAdapter<Route> jsonAdapter = moshi.adapter(Route.class);
 
         String json = jsonAdapter.toJson(route);
-        final String url = getString(R.string.BASE_URL) + "routes";
+        final String url = getString(R.string.BASE_URL) + "routes/" + TravelsActivity.selected_travel_id;
         try {
             doPostRequest(url, json);
         } catch (IOException e) {

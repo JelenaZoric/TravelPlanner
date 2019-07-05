@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Route implements Serializable {
 
+    public Long id;
     public String name;
     public Date date;
     public List<Activity> activities = new ArrayList<>();
