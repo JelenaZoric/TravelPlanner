@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,14 +15,48 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ftn.uns.travelplaner.adapters.CommentsAdapter;
+import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.ActivityType;
 import com.ftn.uns.travelplaner.model.Object;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class ObjectActivity extends AppCompatActivity {
+
+    OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(new AuthInterceptor(this))
+            .build();
+
+    private Moshi moshi = new Moshi.Builder()
+            .add(Date.class, new Rfc3339DateJsonAdapter())
+            .build();
+
+    ProgressDialog progressDialog;
+    private Object object;
+    private Long activityId;
+
+    ImageView imageView;
+    TextView addressView;
+    TextView emailView;
+    TextView phoneView;
+    TextView ratingView;
+    TextView descriptionView;
+    ListView commentsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +66,14 @@ public class ObjectActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        imageView = findViewById(R.id.object_image);
+        addressView = findViewById(R.id.object_address);
+        emailView = findViewById(R.id.object_email);
+        phoneView = findViewById(R.id.object_phone);
+        ratingView = findViewById(R.id.object_rating);
+        descriptionView = findViewById(R.id.object_description);
+        commentsView = findViewById(R.id.comments);
 
         FloatingActionButton fab = findViewById(R.id.new_comment);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -45,17 +88,12 @@ public class ObjectActivity extends AppCompatActivity {
     }
 
     private void setState() {
+        activityId = getIntent().getLongExtra("current_activity_id", 0);
+        getObject();
+    }
 
-        Object object = Mocker.dbActivity.object;
-
+    void updateView() {
         setTitle(object.name);
-        ImageView imageView = findViewById(R.id.object_image);
-        TextView addressView = findViewById(R.id.object_address);
-        TextView emailView = findViewById(R.id.object_email);
-        TextView phoneView = findViewById(R.id.object_phone);
-        TextView ratingView = findViewById(R.id.object_rating);
-        TextView descriptionView = findViewById(R.id.object_description);
-
         if (object.imagePath != null) {
             imageView.setImageURI(Uri.parse(object.imagePath));
         }
@@ -66,8 +104,7 @@ public class ObjectActivity extends AppCompatActivity {
         emailView.setText(object.email);
         phoneView.setText(object.phoneNumber);
 
-        ListView commentsView = findViewById(R.id.comments);
-        commentsView.setAdapter(new CommentsAdapter(ObjectActivity.this, Mocker.dbActivity.object.comments));
+        commentsView.setAdapter(new CommentsAdapter(ObjectActivity.this, object.comments));
     }
 
     @Override
@@ -87,5 +124,55 @@ public class ObjectActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    void getObject() {
+        final String url = getString(R.string.BASE_URL) + "objects/" + activityId;
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setTitle("Loading object");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("\nErrororororor\n");
+                        progressDialog.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                progressDialog.dismiss();
+                final String myResponse = response.body().string();
+                if(response.isSuccessful()) {
+                    Type type = Types.newParameterizedType(Object.class);
+                    JsonAdapter<Object> adapter = moshi.adapter(type);
+                    object = adapter.fromJson(myResponse);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateView();
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("Manji eror");
+                        }
+                    });
+                }
+            }
+        });
     }
 }

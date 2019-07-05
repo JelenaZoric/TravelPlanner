@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplanerbackend.model.dto;
 
+import com.ftn.uns.travelplanerbackend.model.Object;
 import com.ftn.uns.travelplanerbackend.model.Route;
 import com.ftn.uns.travelplanerbackend.model.Travel;
 
@@ -27,5 +28,20 @@ public class Converters {
 		dto.setRouteTravel(route.getRouteTravel());
 		return dto;
 	}
-
+	
+	public static ObjectDTO convertObjectToDTO(Object object) {
+		ObjectDTO dto = new ObjectDTO();
+		dto.setAddress(object.getAddress());
+		dto.setComments(object.getComments());
+		dto.setDescription(object.getDescription());
+		dto.setEmail(object.getEmail());
+		dto.setId(object.getId());
+		dto.setImagePath(object.getImagePath());
+		dto.setLocation(object.getLocation());
+		dto.setName(object.getName());
+		dto.setPhoneNumber(object.getPhoneNumber());
+		dto.setRating(object.getRating());
+		dto.setType(object.getType());
+		return dto;
+	}
 }

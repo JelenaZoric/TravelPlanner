@@ -87,11 +87,6 @@ public class NewActivityActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 String selectedItem = parentView.getSelectedItem().toString();
-                /*
-                Random random = new Random();
-                mockerObjects = Mocker.mockObjects(random.nextInt(2) + 1, ActivityType.valueOf(selectedItem.toUpperCase()), -1);
-                */
-                //String location =
                 getObjectsByType(ActivityType.valueOf(selectedItem.toUpperCase()));
             }
 
