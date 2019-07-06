@@ -48,7 +48,6 @@ public class ObjectActivity extends AppCompatActivity {
 
     ProgressDialog progressDialog;
     private Object object;
-    private Long activityId;
 
     ImageView imageView;
     TextView addressView;
@@ -80,6 +79,7 @@ public class ObjectActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ObjectActivity.this, NewCommentActivity.class);
+                intent.putExtra("object_id", object.id);
                 startActivity(intent);
             }
         });
@@ -88,7 +88,6 @@ public class ObjectActivity extends AppCompatActivity {
     }
 
     private void setState() {
-        activityId = getIntent().getLongExtra("current_activity_id", 0);
         getObject();
     }
 
@@ -127,7 +126,7 @@ public class ObjectActivity extends AppCompatActivity {
     }
 
     void getObject() {
-        final String url = getString(R.string.BASE_URL) + "objects/" + activityId;
+        final String url = getString(R.string.BASE_URL) + "objects/" + RouteListActivity.current_activity_id;
         Request request = new Request.Builder()
                 .url(url)
                 .build();

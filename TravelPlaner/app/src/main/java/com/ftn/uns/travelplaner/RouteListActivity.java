@@ -55,6 +55,7 @@ public class RouteListActivity extends AppCompatActivity
     ProgressDialog progressDialog;
     ListView activitiesView;
     private List<Activity> activities = new ArrayList<>();
+    static Long current_activity_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +93,8 @@ public class RouteListActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Long activityId = activities.get(position).id;
+                current_activity_id = activities.get(position).id;
                 Intent intent = new Intent(RouteListActivity.this, ObjectActivity.class);
-                intent.putExtra("current_activity_id", activityId);
                 startActivity(intent);
             }
         });
