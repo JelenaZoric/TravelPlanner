@@ -1,13 +1,11 @@
 package com.ftn.uns.travelplanerbackend.service;
 
 import java.util.List;
-import java.util.Optional;
 
-import com.ftn.uns.travelplanerbackend.model.Location;
-import com.ftn.uns.travelplanerbackend.model.Transportation;
 import com.ftn.uns.travelplanerbackend.repository.LocationRepository;
+import com.ftn.uns.travelplanerbackend.repository.ObjectRepository;
 import com.ftn.uns.travelplanerbackend.repository.TransportationRepository;
-import com.ftn.uns.travelplanerbackend.utils.GoogleCoordinatesService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +27,8 @@ public class TravelServiceImpl implements TravelService {
 
 	@Autowired
 	private TransportationRepository transportationRepository;
+	@Autowired
+	private ObjectRepository objectRepository;
 	
 	@Override
 	public Travel findOne(Long id) {
@@ -51,6 +51,9 @@ public class TravelServiceImpl implements TravelService {
 		if(travel == null) {
 			throw new IllegalArgumentException("Tried to delete non existing entity");
 		}
+		transportationRepository.delete(travel.getOrigin());
+		transportationRepository.delete(travel.getDestination());
+		objectRepository.delete(travel.getAccommodation());
 		travelRepository.delete(travel);
 		return travel;
 	}

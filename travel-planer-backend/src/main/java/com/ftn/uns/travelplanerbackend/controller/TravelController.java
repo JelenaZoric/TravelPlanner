@@ -96,9 +96,14 @@ public class TravelController {
 		return persistentTransportationLocation;
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@RequestMapping(method=RequestMethod.DELETE, value="/{id}")
-	public ResponseEntity<Travel> deleteTravel(@PathVariable("id") Long id) {
-		Travel deletedTravel = travelService.delete(id);
+	public ResponseEntity<Travel> deleteTravel(@PathVariable("id") Long id, Authentication authentication) {
+		User user = userService.findOne(Long.valueOf(authentication.getName()));
+		Travel deletedTravel = travelService.findOne(id);
+		user.getTravels().remove(deletedTravel);
+		userService.save(user);
+		deletedTravel = travelService.delete(id);
 		return new ResponseEntity<Travel>(deletedTravel, HttpStatus.NO_CONTENT);
 	}
 	

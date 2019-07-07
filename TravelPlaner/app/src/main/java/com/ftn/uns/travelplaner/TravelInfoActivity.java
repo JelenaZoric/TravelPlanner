@@ -90,7 +90,7 @@ public class TravelInfoActivity extends AppCompatActivity
     }
 
     private void setState() {
-        currentTravelId = getIntent().getLongExtra("current_travel_id", 0);
+        currentTravelId = TravelsActivity.selected_travel_id;
 
         final String url = getString(R.string.BASE_URL) + "travels/" + currentTravelId.toString();
         Request request = new Request.Builder()
@@ -187,7 +187,7 @@ public class TravelInfoActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_full_bar, menu);
         return true;
     }
 
@@ -205,6 +205,7 @@ public class TravelInfoActivity extends AppCompatActivity
         }
 
         if (id == R.id.action_delete) {
+            deleteTravel();
             return true;
         }
 
@@ -263,5 +264,39 @@ public class TravelInfoActivity extends AppCompatActivity
 
         TextView accommodationPhoneView = findViewById(R.id.accommodation_phone_number);
         accommodationPhoneView.setText(travel.accommodation.phoneNumber);
+    }
+
+    void deleteTravel() {
+        final String url = getString(R.string.BASE_URL) + "travels/" + TravelsActivity.selected_travel_id;
+        Request request = new Request.Builder()
+                .url(url)
+                .delete()
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                System.out.println("Nije dosao do response-a");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(TravelInfoActivity.this, TravelsActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                } else runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("Neuspesno brisanje");
+                        System.out.println(response.body().toString());
+                    }
+                });
+            }
+        });
     }
 }
