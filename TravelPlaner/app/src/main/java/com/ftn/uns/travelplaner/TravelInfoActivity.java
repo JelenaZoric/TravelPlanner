@@ -276,7 +276,6 @@ public class TravelInfoActivity extends AppCompatActivity
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
-                System.out.println("Nije dosao do response-a");
             }
 
             @Override

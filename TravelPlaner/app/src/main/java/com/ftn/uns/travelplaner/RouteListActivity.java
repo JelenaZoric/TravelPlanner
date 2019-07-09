@@ -112,7 +112,7 @@ public class RouteListActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings_bar, menu);
+        getMenuInflater().inflate(R.menu.settings_full_bar, menu);
         return true;
     }
 
@@ -130,6 +130,7 @@ public class RouteListActivity extends AppCompatActivity
         }
 
         if(id == R.id.action_delete) {
+            deleteRoute();
             return true;
         }
 
@@ -219,6 +220,38 @@ public class RouteListActivity extends AppCompatActivity
                         }
                     });
                 }
+            }
+        });
+    }
+
+    void deleteRoute() {
+        final String url = getString(R.string.BASE_URL) + "routes/" + RoutesActivity.currentRouteId;
+        Request request = new Request.Builder()
+                .url(url)
+                .delete()
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(RouteListActivity.this, RoutesActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                } else runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("Greska u brisanju rute");
+                    }
+                });
             }
         });
     }

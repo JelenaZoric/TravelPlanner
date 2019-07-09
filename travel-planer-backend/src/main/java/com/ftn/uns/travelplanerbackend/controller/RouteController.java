@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ftn.uns.travelplanerbackend.model.Activity;
 import com.ftn.uns.travelplanerbackend.model.Route;
 import com.ftn.uns.travelplanerbackend.model.Travel;
+import com.ftn.uns.travelplanerbackend.service.ActivityService;
 import com.ftn.uns.travelplanerbackend.service.RouteService;
 import com.ftn.uns.travelplanerbackend.service.TravelService;
 
@@ -26,6 +28,8 @@ public class RouteController {
 	private RouteService routeService;
 	@Autowired
 	private TravelService travelService;
+	@Autowired
+	private ActivityService activityService;
 	
 	@RequestMapping
 	public ResponseEntity<List<Route>> getAllRoutes() {
@@ -57,7 +61,11 @@ public class RouteController {
 	
 	@RequestMapping(value="{id}",method=RequestMethod.DELETE)
 	public ResponseEntity<Route> deleteRoute(@PathVariable("id")Long id) {
-		Route deleted = routeService.delete(id);
+		Route deleted = routeService.findOne(id);
+		for(Activity activity : deleted.getActivities()) {
+			activityService.delete(activity.getId());
+		}
+		deleted = routeService.delete(id);
 		return new ResponseEntity<Route>(deleted, HttpStatus.NO_CONTENT);
 	}
 	
