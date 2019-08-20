@@ -201,6 +201,9 @@ public class TravelInfoActivity extends AppCompatActivity
         }
 
         if (id == R.id.action_edit) {
+            Intent intent = new Intent(TravelInfoActivity.this, NewTravelActivity.class);
+            intent.putExtra("editTravel", travel);
+            startActivity(intent);
             return true;
         }
 

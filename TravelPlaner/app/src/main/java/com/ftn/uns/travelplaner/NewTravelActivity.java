@@ -107,6 +107,16 @@ public class NewTravelActivity extends AppCompatActivity {
         addressView = findViewById(R.id.accommodation_address);
         emailView = findViewById(R.id.accommodation_email);
         phoneView = findViewById(R.id.accommodation_phone_number);
+
+        if(getIntent().hasExtra("editTravel")) {
+            originView.setText(travel.origin.location.city + ", " + travel.origin.location.country);
+            destinationView.setText(travel.destination.location.city + ", " + travel.destination.location.country);
+            travelMode.setSelection(((ArrayAdapter<String>)travelMode.getAdapter()).getPosition(travel.mode.toString()));
+            hotelView.setText(travel.accommodation.name);
+            addressView.setText(travel.accommodation.address);
+            emailView.setText(travel.accommodation.email);
+            phoneView .setText(travel.accommodation.phoneNumber);
+        }
     }
 
     private void setListeners(Spinner view, final boolean isTime) {
@@ -157,15 +167,19 @@ public class NewTravelActivity extends AppCompatActivity {
     }
 
     private void initState() {
-        travel = new Travel();
+        if(getIntent().hasExtra("editTravel")) {
+            travel = (Travel) getIntent().getSerializableExtra("editTravel");
+        } else {
+            travel = new Travel();
 
-        travel.accommodation = new Object();
-        travel.accommodation.location = new Location();
+            travel.accommodation = new Object();
+            travel.accommodation.location = new Location();
 
-        travel.destination = new Transportation();
-        travel.destination.location = new Location();
-        travel.origin = new Transportation();
-        travel.origin.location = new Location();
+            travel.destination = new Transportation();
+            travel.destination.location = new Location();
+            travel.origin = new Transportation();
+            travel.origin.location = new Location();
+        }
     }
 
     @Override
@@ -195,10 +209,12 @@ public class NewTravelActivity extends AppCompatActivity {
         nDialog.show();
 
         travel.origin.location = createLocation(originView);
-        travel.origin.departure = createTimestamp(dateFromView, timeFromView);
+        if(dateFromView.getSelectedItemPosition() >= 0 && timeFromView.getSelectedItemPosition() >= 0)
+            travel.origin.departure = createTimestamp(dateFromView, timeFromView);
 
         travel.destination.location = createLocation(destinationView);
-        travel.destination.departure = createTimestamp(dateToView, timeToView);
+        if(dateToView.getSelectedItemPosition() >= 0 && timeToView.getSelectedItemPosition() >= 0)
+            travel.destination.departure = createTimestamp(dateToView, timeToView);
 
         travel.mode = TransportationMode.valueOf(travelMode.getSelectedItem().toString().toUpperCase());
 
@@ -209,7 +225,11 @@ public class NewTravelActivity extends AppCompatActivity {
         travel.accommodation.address = addressView.getText().toString();
         travel.accommodation.phoneNumber = phoneView.getText().toString();
 
-        postTravel(travel);
+        if(getIntent().hasExtra("editTravel")) {
+            putTravel();
+        } else {
+            postTravel(travel);
+        }
         return true;
     }
 
@@ -293,5 +313,38 @@ public class NewTravelActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    void putTravel() {
+        JsonAdapter<Travel> jsonAdapter = moshi.adapter(Travel.class);
+        String json = jsonAdapter.toJson(travel);
+        final String url = getString(R.string.BASE_URL) + "travels/" + travel.id;
+        RequestBody requestBody = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .put(requestBody)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+
+                if (response.isSuccessful()) {
+                    nDialog.dismiss();
+                    Intent intent = new Intent(NewTravelActivity.this, TravelInfoActivity.class);
+                    startActivity(intent);
+                }
+                else { // npr. unauthorized 401
+                    System.out.println("\nDoing isNotSuccessful");
+                    System.out.println(myResponse);
+                    nDialog.dismiss();
+                }
+            }
+        });
     }
 }

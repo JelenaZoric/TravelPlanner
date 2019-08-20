@@ -65,7 +65,7 @@
 
     <!-- network communication -->
     <!--<string name="BASE_URL">http://192.168.0.18:8080/</string>-->
-    <string name="BASE_URL">http://192.168.0.16:8080/</string>
+    <string name="BASE_URL">http://192.168.0.14:8080/</string>
     <string name="network_failure">Failure in network communication.</string>
 
     <string name="title_activity_settings">Settings</string>

@@ -110,6 +110,17 @@ public class TravelController {
 	@RequestMapping(method=RequestMethod.PUT, value="/{id}", consumes="application/json", produces="application/json")
 	public ResponseEntity<Travel> editTravel(@PathVariable("id") Long id, @RequestBody Travel travel) {
 		Travel editedTravel = travelService.findOne(id);
+		Object object = objectService.save(travel.getAccommodation());
+		editedTravel.setAccommodation(object);
+		Transportation origin = travel.getOrigin();
+		origin.setLocation(getProperLocation(origin));
+		origin = transportationService.save(origin);
+		editedTravel.setOrigin(origin);
+		Transportation destination = travel.getDestination();
+		destination.setLocation(getProperLocation(destination));
+		destination = transportationService.save(destination);
+		editedTravel.setDestination(destination);
+		editedTravel.setMode(travel.getMode());
 		editedTravel.setCurrency(travel.getCurrency());
 		travelService.save(editedTravel);
 		return new ResponseEntity<Travel>(editedTravel, HttpStatus.OK);
