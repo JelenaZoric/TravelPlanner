@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -68,10 +69,15 @@ public class NewRouteActivity extends AppCompatActivity {
 
         nameView = findViewById(R.id.new_route);
         dateView = findViewById(R.id.new_route_date);
+
+        if(getIntent().hasExtra("editRoute")) {
+            getRoute();
+        }
     }
 
     private void initState() {
         this.route = new Route();
+        route.date = new Date();
     }
 
     @Override
@@ -108,10 +114,12 @@ public class NewRouteActivity extends AppCompatActivity {
         //route.date = LocalDate.of(dateView.getYear(), dateView.getMonth() + 1, dateView.getDayOfMonth());
         Calendar c = Calendar.getInstance();
         c.set(dateView.getYear(), dateView.getMonth(), dateView.getDayOfMonth());
-        System.out.println(c.getTime());
         route.date = c.getTime();
 
-        postRoute(route);
+        if(getIntent().hasExtra("editRoute"))
+            putRoute();
+        else
+            postRoute(route);
         return true;
     }
 
@@ -137,8 +145,7 @@ public class NewRouteActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 final String myResponse = response.body().string();
                 if (response.isSuccessful()) {
-                    Type type = Types.newParameterizedType(Route.class);
-                    JsonAdapter<Route> adapter = moshi.adapter(type);
+                    JsonAdapter<Route> adapter = moshi.adapter(Route.class);
                     Route route = adapter.fromJson(myResponse);
 
                     nDialog.dismiss();
@@ -166,5 +173,76 @@ public class NewRouteActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    void getRoute() {
+        final String url = getString(R.string.BASE_URL) + "routes/getRoute/" + RoutesActivity.currentRouteId;
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(response.isSuccessful()) {
+                            JsonAdapter<Route> jsonAdapter = moshi.adapter(Route.class);
+                            try {
+                                route = jsonAdapter.fromJson(myResponse);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            nameView.setText(route.name);
+                            Calendar calendar = new GregorianCalendar();
+                            calendar.setTime(route.date);
+                            int year = calendar.get(Calendar.YEAR);
+                            int month = calendar.get(Calendar.MONTH);
+                            int day = calendar.get(Calendar.DAY_OF_MONTH);
+                            dateView.updateDate(year, month, day);
+                        } else {
+                            System.out.println("\nDoing isNotSuccessful");
+                            System.out.println(myResponse);
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+
+    void putRoute() {
+        JsonAdapter<Route> jsonAdapter = moshi.adapter(Route.class);
+        String json = jsonAdapter.toJson(route);
+        final String url = getString(R.string.BASE_URL) + "routes/" + RoutesActivity.currentRouteId;
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .put(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                if(response.isSuccessful()) {
+                    Intent intent = new Intent(NewRouteActivity.this, RoutesActivity.class);
+                    startActivity(intent);
+                } else {
+                    System.out.println("\nDoing isNotSuccessful");
+                    System.out.println(myResponse);
+                }
+            }
+        });
     }
 }

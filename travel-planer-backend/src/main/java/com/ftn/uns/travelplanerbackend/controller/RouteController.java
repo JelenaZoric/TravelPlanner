@@ -44,8 +44,8 @@ public class RouteController {
 		return new ResponseEntity<Set<Route>>(routes, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="{travel_id}/{id}")
-	public ResponseEntity<Route> getRoute(@PathVariable("id") Long id, @PathVariable("travel_id") Long travel_id) {
+	@RequestMapping(value="getRoute/{id}")
+	public ResponseEntity<Route> getRoute(@PathVariable("id") Long id) {
 		Route route = routeService.findOne(id);
 		return new ResponseEntity<Route>(route, HttpStatus.OK);
 	}
@@ -72,7 +72,6 @@ public class RouteController {
 	@RequestMapping(value="{id}",method=RequestMethod.PUT,consumes="application/json",produces="application/json")
 	public ResponseEntity<Route> editRoute(@PathVariable("id") Long id, @RequestBody Route route) {
 		Route edited = routeService.findOne(id);
-		edited.setActivities(route.getActivities());
 		edited.setDate(route.getDate());
 		edited.setName(route.getName());
 		edited = routeService.save(edited);

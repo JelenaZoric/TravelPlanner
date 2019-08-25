@@ -209,6 +209,7 @@ public class NewTravelActivity extends AppCompatActivity {
         nDialog.show();
 
         travel.origin.location = createLocation(originView);
+        //ako se unese samo datum ili samo vreme, i dalje ostaje nepromenjeno celo
         if(dateFromView.getSelectedItemPosition() >= 0 && timeFromView.getSelectedItemPosition() >= 0)
             travel.origin.departure = createTimestamp(dateFromView, timeFromView);
 

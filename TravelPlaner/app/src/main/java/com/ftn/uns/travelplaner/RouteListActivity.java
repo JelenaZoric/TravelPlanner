@@ -126,6 +126,9 @@ public class RouteListActivity extends AppCompatActivity
         }
 
         if (id == R.id.action_edit) {
+            Intent intent = new Intent(RouteListActivity.this, NewRouteActivity.class);
+            intent.putExtra("editRoute", "edit");
+            startActivity(intent);
             return true;
         }
 
