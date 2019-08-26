@@ -1,6 +1,8 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -96,6 +98,40 @@ public class RouteListActivity extends AppCompatActivity
                 current_activity_id = activities.get(position).id;
                 Intent intent = new Intent(RouteListActivity.this, ObjectActivity.class);
                 startActivity(intent);
+            }
+        });
+        activitiesView.setLongClickable(true);
+        activitiesView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
+                //Do your tasks here
+
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(
+                        RouteListActivity.this);
+                alert.setTitle("Confirm deletion");
+                alert.setMessage("Are you sure you want to delete this activity?");
+                alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Long activityId = activities.get(position).id;
+                        deleteActivity(activityId);
+                        dialog.dismiss();
+
+                    }
+                });
+                alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                    }
+                });
+
+                alert.show();
+
+                return true;
             }
         });
     }
@@ -255,6 +291,34 @@ public class RouteListActivity extends AppCompatActivity
                         System.out.println("Greska u brisanju rute");
                     }
                 });
+            }
+        });
+    }
+
+    void deleteActivity(Long activityId) {
+        final String url = getString(R.string.BASE_URL) + "activities/" + activityId;
+        Request request = new Request.Builder()
+                .url(url)
+                .delete()
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setState();
+                        }
+                    });
+                } else {
+                    System.out.println("Activity deletion error!");
+                }
             }
         });
     }
