@@ -221,7 +221,7 @@ public class NewTravelActivity extends AppCompatActivity {
 
         travel.accommodation.name = hotelView.getText().toString();
         travel.accommodation.type = ActivityType.ACCOMMODATION;
-        travel.accommodation.location = travel.destination.location;
+        travel.accommodation.location = new Location(addressView.getText() + "," + travel.destination.location.country, travel.destination.location.city);
         travel.accommodation.email = emailView.getText().toString();
         travel.accommodation.address = addressView.getText().toString();
         travel.accommodation.phoneNumber = phoneView.getText().toString();

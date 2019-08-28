@@ -161,6 +161,7 @@ public class TravelInfoActivity extends AppCompatActivity
         catch (Exception e) {
             e.printStackTrace();
         }
+
         List<Double> coordinates = Arrays.asList(
                 travel.accommodation.location.latitude,
                 travel.accommodation.location.longitude);

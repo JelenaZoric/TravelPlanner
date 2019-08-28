@@ -66,7 +66,7 @@ public class ObjectServiceImpl implements ObjectService {
 	public List<Object> getObjectsByLocationAndType(String locationString, String type) {
 		String[] locationParts = locationString.split(",");
 
-		Optional<Location> location = locationRepository.findByCityAndCountry(locationParts[0], locationParts[1]);
+		Optional<Location> location = locationRepository.findFirstByCityAndCountry(locationParts[0], locationParts[1]);
 
 		if(!location.isPresent()) {
 			return new ArrayList<>();
@@ -78,7 +78,7 @@ public class ObjectServiceImpl implements ObjectService {
 	}
 	
 	public Location checkLocation(Location location) {
-		Optional<Location> optionalLocation = locationRepository.findByCityAndCountry(location.getCity(), location.getCountry());
+		Optional<Location> optionalLocation = locationRepository.findFirstByCityAndCountry(location.getCity(), location.getCountry());
 		Location persistentLocation;
 
 		if (optionalLocation.isPresent()) {

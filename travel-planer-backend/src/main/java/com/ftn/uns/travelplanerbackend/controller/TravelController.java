@@ -83,7 +83,7 @@ public class TravelController {
 	
 	Location getProperLocation(Transportation transportation) {
 		Location transportationLocation = transportation.getLocation();
-		Optional<Location> optionalTransportationLocation = locationRepository.findByCityAndCountry(transportationLocation.getCity(), transportationLocation.getCountry());
+		Optional<Location> optionalTransportationLocation = locationRepository.findFirstByCityAndCountry(transportationLocation.getCity(), transportationLocation.getCountry());
 		Location persistentTransportationLocation;
 
 		if (optionalTransportationLocation.isPresent()) {
