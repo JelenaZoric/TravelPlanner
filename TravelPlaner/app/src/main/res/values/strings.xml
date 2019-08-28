@@ -40,8 +40,8 @@
     <string name="prompt_destination_location">Going to</string>
     <string name="prompt_origin_date">Departure date</string>
     <string name="prompt_origin_time">Departure time</string>
-    <string name="prompt_destination_date">Arrival date</string>
-    <string name="prompt_destination_time">Arrival time</string>
+    <string name="prompt_destination_date">Departure date</string>
+    <string name="prompt_destination_time">Departure time</string>
     <string name="prompt_mode">Travel mode</string>
     <string name="prompt_accommodation_name">Hotel</string>
     <string name="prompt_accommodation_address">Hotel address</string>
