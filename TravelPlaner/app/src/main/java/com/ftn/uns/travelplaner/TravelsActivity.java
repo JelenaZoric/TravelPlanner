@@ -16,11 +16,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.ftn.uns.travelplaner.adapters.TravelsAdapter;
 import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.Travel;
+import com.ftn.uns.travelplaner.model.User;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -57,6 +59,10 @@ public class TravelsActivity extends AppCompatActivity
 
     private List<Travel> travels = new ArrayList<Travel>();
 
+    TextView navUsername;
+    TextView navEmail;
+    User user = new User();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,10 +90,16 @@ public class TravelsActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View headerView = navigationView.getHeaderView(0);
+        
+        navUsername = headerView.findViewById(R.id.nav_username);
+        navEmail = headerView.findViewById(R.id.nav_email);
+
         setState();
     }
 
     private void setState() {
+        getUser();
         getTravels();
         travelsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -100,6 +112,9 @@ public class TravelsActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+
+        navEmail.setText(user.email);
+        navUsername.setText(user.firstName + " " + user.lastName);
     }
 
     @Override
@@ -201,6 +216,37 @@ public class TravelsActivity extends AppCompatActivity
                             System.out.println("\nManji Errororor\n");
                         }
                     });
+                }
+            }
+        });
+    }
+
+    void getUser() {
+        final String url = getString(R.string.BASE_URL) + "users/getCurrentUser";
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                if(response.isSuccessful()) {
+                    JsonAdapter<User> jsonAdapter = moshi.adapter(User.class);
+                    user = jsonAdapter.fromJson(myResponse);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            navUsername.setText(user.firstName + " " + user.lastName);
+                            navEmail.setText(user.email);
+                        }
+                    });
+                } else {
+                    System.out.println("Getting user data was unsuccessfull.");
                 }
             }
         });

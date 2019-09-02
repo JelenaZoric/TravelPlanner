@@ -29,10 +29,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="false"
+                android:enabled="false"
                 android:hint="@string/prompt_email"
                 android:maxLines="1"
-                android:singleLine="true"
-                android:enabled="false"/>
+                android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -46,10 +46,13 @@
                 android:id="@+id/first_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:editable="true"
+                android:enabled="false"
                 android:hint="@string/prompt_first_name"
                 android:inputType="textAutoComplete"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textColor="@color/colorAccent" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -63,13 +66,16 @@
                 android:id="@+id/last_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:hint="@string/prompt_last_name"
                 android:inputType="textAutoComplete"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textColor="@color/colorAccent" />
 
         </android.support.design.widget.TextInputLayout>
 
+        <!--
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -86,6 +92,7 @@
                 android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
+        -->
     </LinearLayout>
 
 </FrameLayout>

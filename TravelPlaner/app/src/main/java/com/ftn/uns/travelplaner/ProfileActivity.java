@@ -13,11 +13,37 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.mock.Mocker;
 import com.ftn.uns.travelplaner.model.User;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
+
+import java.io.IOException;
+import java.util.Date;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class ProfileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(new AuthInterceptor(this))
+            .build();
+
+    private Moshi moshi = new Moshi.Builder()
+            .add(Date.class, new Rfc3339DateJsonAdapter())
+            .build();
+
+    User user =  new User();
+    EditText emailView;
+    TextView firstNameView;
+    TextView lastNameView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,23 +61,18 @@ public class ProfileActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        emailView = findViewById(R.id.email);
+        firstNameView = findViewById(R.id.first_name);
+        lastNameView = findViewById(R.id.last_name);
+
         setState();
     }
 
     private void setState() {
-        User user = Mocker.db;
+        getUser();
 
-        EditText emailView = findViewById(R.id.email);
-        emailView.setText(user.email);
-
-        TextView firstNameView = findViewById(R.id.first_name);
-        firstNameView.setText(user.firstName);
-
-        TextView lastNameView = findViewById(R.id.last_name);
-        lastNameView.setText(user.lastName);
-
-        TextView locationView = findViewById(R.id.location);
-        locationView.setText(user.location.toString());
+        //TextView locationView = findViewById(R.id.location);
+        //locationView.setText(user.location.toString());
     }
 
     @Override
@@ -106,4 +127,37 @@ public class ProfileActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    void getUser() {
+        final String url = getString(R.string.BASE_URL) + "users/getCurrentUser";
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                if(response.isSuccessful()) {
+                    JsonAdapter<User> jsonAdapter = moshi.adapter(User.class);
+                    user = jsonAdapter.fromJson(myResponse);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            emailView.setText(user.email);
+                            firstNameView.setText(user.firstName);
+                            lastNameView.setText(user.lastName);
+                        }
+                    });
+                } else {
+                    System.out.println("Getting user data was unsuccessfull.");
+                }
+            }
+        });
+    }
+
 }
