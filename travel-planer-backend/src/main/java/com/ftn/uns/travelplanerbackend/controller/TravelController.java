@@ -2,6 +2,7 @@ package com.ftn.uns.travelplanerbackend.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.ftn.uns.travelplanerbackend.model.User;
 import com.ftn.uns.travelplanerbackend.repository.LocationRepository;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ftn.uns.travelplanerbackend.model.Item;
 import com.ftn.uns.travelplanerbackend.model.Location;
 import com.ftn.uns.travelplanerbackend.model.Object;
 import com.ftn.uns.travelplanerbackend.model.Transportation;
@@ -124,5 +126,16 @@ public class TravelController {
 		editedTravel.setCurrency(travel.getCurrency());
 		travelService.save(editedTravel);
 		return new ResponseEntity<Travel>(editedTravel, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="{id}" + "/items")
+	public ResponseEntity<Set<Item>> getTravelItems(@PathVariable("id") Long id) {
+		System.out.println("usao u metodu");
+		Travel travel = travelService.findOne(id);
+		System.out.println("Usao je u metodu i nasao travel sa id = " + id);
+		System.out.println(travel.getId());
+		Set<Item> items = travel.getItems();
+		System.out.println("nasao je " + items.size() + " itema od putovanja");
+		return new ResponseEntity<Set<Item>>(items, HttpStatus.OK);
 	}
 }

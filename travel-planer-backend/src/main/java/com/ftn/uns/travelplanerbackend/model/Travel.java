@@ -27,7 +27,7 @@ public class Travel implements Serializable {
 	@OneToOne//(cascade = CascadeType.ALL)		//nije provereno
 	private Object accommodation;
 	@JsonIgnore
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	private Set<Item> items = new HashSet<>();
 	@JsonIgnore
 	@OneToMany(mappedBy="routeTravel")

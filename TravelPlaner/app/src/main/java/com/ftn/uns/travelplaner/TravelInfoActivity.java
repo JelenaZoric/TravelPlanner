@@ -60,7 +60,7 @@ public class TravelInfoActivity extends AppCompatActivity
 
     ProgressDialog progressDialog;
 
-    Long currentTravelId;
+    static Long currentTravelId;
 
     Travel travel = null;
 

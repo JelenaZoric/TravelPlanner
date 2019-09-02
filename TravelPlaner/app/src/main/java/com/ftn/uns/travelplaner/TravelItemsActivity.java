@@ -1,5 +1,6 @@
 package com.ftn.uns.travelplaner;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -16,19 +17,51 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.ftn.uns.travelplaner.adapters.TravelItemsAdapter;
-import com.ftn.uns.travelplaner.mock.Mocker;
+import com.ftn.uns.travelplaner.adapters.TravelsAdapter;
+import com.ftn.uns.travelplaner.auth.AuthInterceptor;
 import com.ftn.uns.travelplaner.model.Item;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class TravelItemsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(new AuthInterceptor(this))
+            .build();
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+
+    private Moshi moshi = new Moshi.Builder()
+            .add(Date.class, new Rfc3339DateJsonAdapter())
+            .build();
+    private List<Item> items = new ArrayList<>();
+    ProgressDialog progressDialog;
+    ListView itemsView;
+    //Set<Item> items = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travel_items);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -52,7 +85,8 @@ public class TravelItemsActivity extends AppCompatActivity
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 Item item = new Item();
                 item.name = newItemView.getText().toString();
-                Mocker.dbTravel.items.add(item);
+                setState();
+                postItem(item);
                 return true;
             }
         });
@@ -65,13 +99,14 @@ public class TravelItemsActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        itemsView = findViewById(R.id.travel_items_list);
         setState();
     }
 
     private void setState() {
-        ListView itemsView = findViewById(R.id.travel_items_list);
-        itemsView.setAdapter(new TravelItemsAdapter(TravelItemsActivity.this, Mocker.dbTravel.items));
+        getItems();
+
+        itemsView.setAdapter(new TravelItemsAdapter(TravelItemsActivity.this, items));
     }
 
     @Override
@@ -127,5 +162,126 @@ public class TravelItemsActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    void postItem(Item item){
+
+        JsonAdapter<Item> jsonAdapter = moshi.adapter(Item.class);
+
+        String json = jsonAdapter.toJson(item);
+        final String url = getString(R.string.BASE_URL) + "items/" + TravelInfoActivity.currentTravelId ;
+        try {
+            doPostRequest(url, json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void doPostRequest(String url, String json) throws IOException {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+          /*      runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        testTextView.setText(R.string.network_failure);
+                    }
+                }); */
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String myResponse = response.body().string();
+
+                    Type type = Types.newParameterizedType(Item.class);
+                    JsonAdapter<Item> adapter = moshi.adapter(type);
+                    Item item = adapter.fromJson(myResponse);
+                    items.add(item);
+                    // Testiranja radi.
+                    System.out.println("\nItem:");
+                    System.out.println(item.name);
+                    System.out.println(item.brought);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            itemsView.setAdapter(new TravelItemsAdapter(TravelItemsActivity.this, items));
+                        }
+                    });
+
+              /*      runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            testTextView.append(myResponse);
+                        }
+                    }); */
+                }
+            }
+        });
+    }
+
+    private void getItems(){
+
+        //long currentTravelId = TravelInfoActivity.currentTravelId;
+        final String url = getString(R.string.BASE_URL) + "travels/" + TravelInfoActivity.currentTravelId.toString() + "/items";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setTitle("Loading items");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("\nErrororororor\n");
+                        progressDialog.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                progressDialog.dismiss();
+
+                final String myResponse = response.body().string();
+                System.out.println(myResponse);
+
+                if (response.isSuccessful()) {
+                    Type type = Types.newParameterizedType(List.class, Item.class);
+                    JsonAdapter<List<Item>> adapter = moshi.adapter(type);
+                    items = adapter.fromJson(myResponse);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            itemsView.setAdapter(new TravelItemsAdapter(TravelItemsActivity.this, items));
+                        }
+                    });
+                }
+                else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("\nManji Errororor\n");
+                        }
+                    });
+                }
+            }
+        });
     }
 }
